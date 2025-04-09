@@ -18,7 +18,7 @@ Moti is a minimalist and powerful task management app designed to help you stay 
 -   **UI Library**: Shadcn/ui
 -   **Back-end**: Next.js API Routes, Next.js Server Action
 -   **Database**: MongoDB
--   **ORM**: Mongoose
+-   **ODM**: Mongoose
 -   **Authentication**: Next-Auth v4
 -   **Deployment**: Vercel
 
