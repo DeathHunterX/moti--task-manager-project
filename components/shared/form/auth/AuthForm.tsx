@@ -1,6 +1,5 @@
 "use client";
-
-import Link from "next/link";
+// Form handler
 import {
     DefaultValues,
     FieldValues,
@@ -9,9 +8,11 @@ import {
     useForm,
 } from "react-hook-form";
 
+// Zod defined
 import { z, ZodType } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+// Components
 import {
     Form,
     FormControl,
@@ -24,15 +25,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 // import { toast } from "@/hooks/use-toast";
-import { AUTH_ROUTES_DICT, DEFAULT_LOGIN_REDIRECT } from "@/constants/route";
+import { AUTH_ROUTES_DICT, DEFAULT_LOGIN_REDIRECT } from "@/constants/routes";
 import { ActionResponse } from "@/types/server";
+
+//
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 interface AuthFormProps<T extends FieldValues> {
     schema: ZodType<T>;
     defaultValues: T;
-    // onSubmit: (data: T) => Promise<ActionResponse>;
+    onSubmit: (data: T) => Promise<ActionResponse>;
     formType: "SIGN_IN" | "SIGN_UP";
 }
 
@@ -40,8 +44,8 @@ const AuthForm = <T extends FieldValues>({
     schema,
     defaultValues,
     formType,
-}: // onSubmit,
-AuthFormProps<T>) => {
+    onSubmit,
+}: AuthFormProps<T>) => {
     const router = useRouter();
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -49,30 +53,31 @@ AuthFormProps<T>) => {
     });
 
     const handleSubmit: SubmitHandler<T> = async (data: T) => {
-        // const result = (await onSubmit(data)) as ActionResponse;
-        // if (result?.success) {
-        // toast({
-        //     title: "Success",
-        //     description:
-        //         formType === "SIGN_IN"
-        //             ? "Signed in successfully"
-        //             : "Signed up successfully. Check your mail for email verification",
-        // });
-        // router.push(
-        //     formType === "SIGN_IN"
-        //         ? DEFAULT_LOGIN_REDIRECT
-        //         : AUTH_ROUTES_DICT.SIGN_IN
-        // );
-        // if (formType === "SIGN_IN") {
-        //     window.location.reload();
-        // }
-        // } else {
-        // toast({
-        //     title: `Error ${result?.status}`,
-        //     description: result?.error?.message,
-        //     variant: "destructive",
-        // });
-        // }
+        const result = (await onSubmit(data)) as ActionResponse;
+        if (result?.success) {
+            console.log(result);
+            // toast({
+            //     title: "Success",
+            //     description:
+            //         formType === "SIGN_IN"
+            //             ? "Signed in successfully"
+            //             : "Signed up successfully. Check your mail for email verification",
+            // });
+            router.push(
+                formType === "SIGN_IN"
+                    ? DEFAULT_LOGIN_REDIRECT
+                    : AUTH_ROUTES_DICT.SIGN_IN
+            );
+            if (formType === "SIGN_IN") {
+                window.location.reload();
+            }
+        } else {
+            // toast({
+            //     title: `Error ${result?.status}`,
+            //     description: result?.error?.message,
+            //     variant: "destructive",
+            // });
+        }
     };
 
     const buttonText = formType === "SIGN_IN" ? "Sign In" : "Sign Up";
@@ -90,7 +95,7 @@ AuthFormProps<T>) => {
                         name={field as Path<T>}
                         render={({ field }) => (
                             <FormItem className="flex w-full flex-col">
-                                <FormLabel className="paragraph-medium flex items-start">
+                                <FormLabel className="paragraph-regular flex items-start">
                                     {field.name === "email"
                                         ? "Email Address"
                                         : field.name.charAt(0).toUpperCase() +

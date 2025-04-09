@@ -1,10 +1,11 @@
 "use client";
-import AuthForm from "@/components/shared/form/auth/AuthForm";
 import AuthPageWrapper from "@/components/shared/wrapper/AuthPageWrapper";
 import SocialAuthForm from "@/components/shared/form/auth/SocialAuthForm";
+import AuthForm from "@/components/shared/form/auth/AuthForm";
 import { SignInSchema } from "@/lib/validation";
+import { signInWithCredentials } from "@/lib/actions/auth/signIn.action";
 
-const SignInpage = () => {
+const SignInPage = () => {
     return (
         <AuthPageWrapper
             title="Welcome Back!"
@@ -26,7 +27,7 @@ const SignInpage = () => {
                         formType="SIGN_IN"
                         schema={SignInSchema}
                         defaultValues={{ email: "", password: "" }}
-                        // onSubmit={signInWithCredentials}
+                        onSubmit={signInWithCredentials}
                     />
                 </div>
             </div>
@@ -34,4 +35,4 @@ const SignInpage = () => {
     );
 };
 
-export default SignInpage;
+export default SignInPage;

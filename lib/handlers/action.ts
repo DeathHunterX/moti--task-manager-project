@@ -2,8 +2,9 @@
 
 import { ZodError, ZodSchema } from "zod";
 import { UnauthorizedError, ValidationError } from "../http-error";
-import { getServerSession, Session } from "next-auth";
-// import { connectToDatabase } from "../mongodb/mongoose";
+import { Session } from "next-auth";
+import { auth } from "@/auth";
+import { connectToDatabase } from "../mongodb/mongoose";
 
 type ActionOptions<T> = {
     params?: T;
@@ -38,14 +39,14 @@ async function action<T>({
     let session: Session | null = null;
 
     if (authorize) {
-        session = await getServerSession();
+        session = await auth();
 
         if (!session) {
             return new UnauthorizedError();
         }
     }
 
-    // await connectToDatabase();
+    await connectToDatabase();
 
     return { params, session };
 }

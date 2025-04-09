@@ -3,6 +3,7 @@ import { AppMetadata } from "./metadata";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastContainer, Zoom } from "react-toastify";
+import AuthProvider from "@/providers/AuthProvider";
 
 const interFont = Inter({
     variable: "--font-",
@@ -17,24 +18,26 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body
-                className={`${interFont.className} antialiased max-w-[100vw] relative`}
-            >
-                {children}
-                <ToastContainer
-                    position="bottom-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop
-                    closeOnClick={false}
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="dark"
-                    transition={Zoom}
-                />
-            </body>
+            <AuthProvider>
+                <body
+                    className={`${interFont.className} antialiased max-w-[100vw] relative`}
+                >
+                    {children}
+                    <ToastContainer
+                        position="bottom-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop
+                        closeOnClick={false}
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="dark"
+                        transition={Zoom}
+                    />
+                </body>
+            </AuthProvider>
         </html>
     );
 }
