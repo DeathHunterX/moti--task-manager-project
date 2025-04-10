@@ -46,7 +46,7 @@ const HeroSection = () => {
                             <Link
                                 href="/sign-in"
                                 className="px-[30px] py-[14px] text-base font-semibold rounded-[8px] 
-                                    flex items-center justify-center transition-all duration-300 ease-in-out
+                                    flex items-center justify-center hover:-translate-y-1 transition-transform duration-300
                                     bg-white text-blue-600 border border-blue-600
                                     hover:bg-blue-50 hover:shadow-[0_8px_15px_rgba(0,0,0,0.1)]"
                             >

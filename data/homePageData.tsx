@@ -163,7 +163,7 @@ export const pricingSectionData = [
     {
         name: "Pro",
         price: 12,
-        billing: "per user/month",
+        billing: "/user/month",
         mostPopular: true,
         features: [
             "Unlimited team members",
@@ -179,7 +179,7 @@ export const pricingSectionData = [
     {
         name: "Enterprise",
         price: 12,
-        billing: "per user/month",
+        billing: "/user/month",
         mostPopular: false,
         features: [
             "Everything in Pro",

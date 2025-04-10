@@ -15,7 +15,7 @@ const PricingSection = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-12">
+                <div className="mt-12 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
                     {pricingSectionData.map((pricing, idx) => (
                         <PricingCard
                             key={idx}
