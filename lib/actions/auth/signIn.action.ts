@@ -8,7 +8,7 @@ import { ConflictError, ValidationError } from "@/lib/http-error";
 
 import { connectToDatabase } from "@/lib/mongodb/mongoose";
 import { signIn } from "@/auth";
-import User from "@/lib/mongodb/models/User";
+import User from "@/lib/mongodb/models/user.model";
 
 export const signInWithCredentials = async (
     params: z.infer<typeof SignInSchema>

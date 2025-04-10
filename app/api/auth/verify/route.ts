@@ -1,11 +1,12 @@
-import { getAccountById, getUserByEmail } from "@/lib/actions/user.action";
-import handleError from "@/lib/handlers/error";
-import { NotFoundError, ValidationError } from "@/lib/http-error";
 import { connectToDatabase } from "@/lib/mongodb/mongoose";
+import handleError from "@/lib/handlers/error";
 import { SignInSchema } from "@/lib/validation";
+import { getAccountById, getUserByEmail } from "@/lib/actions/user.action";
+import { NotFoundError, ValidationError } from "@/lib/http-error";
 
 import { ErrorResponse } from "@/types/server";
 import bcrypt from "bcryptjs";
+
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -26,8 +27,7 @@ export async function POST(request: Request) {
         const existingUser = await getUserByEmail(email);
         if (!existingUser) throw new NotFoundError("User");
 
-        const existingAccount = await getAccountById(existingUser.id!);
-        console.log(existingAccount);
+        const existingAccount = await getAccountById(existingUser.id);
         if (!existingAccount) throw new NotFoundError("Account");
 
         if (!existingAccount?.password) {
@@ -46,7 +46,12 @@ export async function POST(request: Request) {
         return NextResponse.json(
             {
                 success: true,
-                user: existingUser,
+                user: {
+                    id: existingUser.id,
+                    name: existingUser.name,
+                    email: existingUser.email,
+                    image: existingUser.image,
+                },
             },
             { status: 200 }
         );

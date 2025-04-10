@@ -46,11 +46,11 @@ export default {
                         }
                     ).then((res) => res.json());
 
-                    console.log(isUserCredentials);
-                    // if (!isUserCredentials.success) {
-                    //     return null;
-                    // }
-                    // return isUserCredentials.user;
+                    if (!isUserCredentials.success) {
+                        return null;
+                    }
+
+                    return isUserCredentials.user;
                 }
                 return null;
             },

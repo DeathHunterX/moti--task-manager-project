@@ -11,7 +11,7 @@ import { ActionResponse, ErrorResponse } from "@/types/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
-import User from "@/lib/mongodb/models/User";
+import User from "@/lib/mongodb/models/user.model";
 import Account from "@/lib/mongodb/models/account.model";
 import { connectToDatabase } from "@/lib/mongodb/mongoose";
 import { getAccountById, getUserByEmail } from "../user.action";

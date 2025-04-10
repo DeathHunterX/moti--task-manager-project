@@ -1,5 +1,15 @@
-import Image from "next/image";
+import HeroSection from "./_components/section/HeroSection";
+import FeatureSection from "./_components/section/FeatureSection";
+import TestimonialSection from "./_components/section/TestimonialSection";
+import PricingSection from "./_components/section/PricingSection";
 
 export default function Home() {
-    return <div className="">Homepage</div>;
+    return (
+        <div>
+            <HeroSection />
+            <FeatureSection />
+            <TestimonialSection />
+            <PricingSection />
+        </div>
+    );
 }

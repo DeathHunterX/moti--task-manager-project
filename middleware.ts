@@ -32,8 +32,6 @@ export default auth((req: any) => {
         return NextResponse.next();
     }
 
-    console.log(isAuthRoute);
-
     /**
      * Case:
      *    - User is logged in.
