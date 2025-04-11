@@ -1,4 +1,6 @@
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 interface AuthLayoutProps {
@@ -34,7 +36,20 @@ const AuthPageWrapper = ({ title, description, children }: AuthLayoutProps) => {
                     />
                 </div>
             </div>
-            <div className="h-full flex-col items-center justify-center px-4 lg:flex">
+
+            <div className="h-full flex-col items-center justify-center px-4 lg:flex relative">
+                <Link
+                    href="/"
+                    role="button"
+                    className="py-1.5 px-3 text-base 
+                    inline-flex flex-row items-center gap-x-1 
+                    hover:underline rounded-lg 
+                    relative lg:absolute lg:top-7 lg:left-5 
+                    mt-7 ml-5 lg:m-0"
+                >
+                    <ArrowLeft size={16} />
+                    Return to Home
+                </Link>
                 <div className="space-y-4 pt-8 text-center">
                     <h1 className="text-3xl font-bold text-[#2E2A47]">
                         {title}

@@ -45,11 +45,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (token.sub && session.user) {
                 session.user.id = token.sub as string;
             }
+            // console.log("Session: ", session)
 
             return session;
         },
 
         async jwt({ token, account }: { token: JWT; account: any }) {
+            // console.log("JWT token: ", token)
             if (token.sub) {
                 const existingUser = await getUserById(token.sub as string);
 

@@ -4,6 +4,11 @@ import SocialAuthForm from "@/components/shared/form/auth/SocialAuthForm";
 import AuthForm from "@/components/shared/form/auth/AuthForm";
 import { SignInSchema } from "@/lib/validation";
 import { signInWithCredentials } from "@/lib/actions/auth/signIn.action";
+import { Metadata } from "next";
+
+// export const metadata: Metadata = {
+//     title: "Sign In",
+// };
 
 const SignInPage = () => {
     return (

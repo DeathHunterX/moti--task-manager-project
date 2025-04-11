@@ -1,38 +1,48 @@
-import FloatingBubble from "@/components/shared/animated/FloatingBubble";
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import CountUp from "react-countup";
+import FloatingBubble from "@/components/shared/animated/FloatingBubble";
+import { formatPercentage } from "@/lib/utils";
+import { JSX, useEffect, useState } from "react";
 
 const HeroSection = () => {
-    const generateRandomBubbles = (count = 8) => {
-        return Array.from({ length: count }, (_, i) => {
-            const size = Math.floor(Math.random() * 60) + 40; // 40px to 100px
-            const top = `${Math.floor(Math.random() * 80)}%`;
-            const left = `${Math.floor(Math.random() * 80)}%`;
-            const duration = `${Math.floor(Math.random() * 10 + 15)}s`;
-            const delay = `${Math.random().toFixed(2)}s`;
+    const [bubbles, setBubbles] = useState<JSX.Element[]>([]);
 
-            return (
-                <FloatingBubble
-                    key={i}
-                    size={size}
-                    top={top}
-                    left={left}
-                    duration={duration}
-                    delay={delay}
-                />
-            );
-        });
-    };
+    useEffect(() => {
+        const generateRandomBubbles = (count = 8) => {
+            return Array.from({ length: count }, (_, i) => {
+                const size = Math.floor(Math.random() * 60) + 40; // 40px to 100px
+                const top = `${Math.floor(Math.random() * 80)}%`;
+                const left = `${Math.floor(Math.random() * 80)}%`;
+                const duration = `${Math.floor(Math.random() * 10 + 15)}s`;
+                const delay = `${Math.random().toFixed(2)}s`;
+
+                return (
+                    <FloatingBubble
+                        key={i}
+                        size={size}
+                        top={top}
+                        left={left}
+                        duration={duration}
+                        delay={delay}
+                    />
+                );
+            });
+        };
+
+        setBubbles(generateRandomBubbles(12));
+    }, []);
+
     return (
-        <section className="bg-[linear-gradient(135deg,_#4A6CF7_0%,_#7e90f9_100%)] relative overflow-hidden py-20">
+        <section className="bg-[linear-gradient(135deg,_#4A6CF7_0%,_#7e90f9_100%)] relative overflow-hidden py-32 lg:pt-20">
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0]">
-                {generateRandomBubbles(12)}
+                {bubbles}
             </div>
-            <div className="container mx-auto px-8 md:p-0">
+            <div className="container mx-auto px-8 md:px-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
                     <div className="">
-                        <h1 className="text-5xl text-center text-balance mb-6 font-bold capitalize text-white">
+                        <h1 className="text-5xl text-balance mb-6 font-bold capitalize text-white">
                             Stay on track, get thing done
                         </h1>
                         <p className="text-lg mb-8 opacity-90 max-w-xl text-white">
@@ -56,7 +66,12 @@ const HeroSection = () => {
                         <div className="flex flex-row mt-10 gap-7 text-white">
                             <div className="text-center">
                                 <div className="text-[28px] font-bold mb-1.5">
-                                    98%
+                                    <CountUp
+                                        preserveValue
+                                        start={0}
+                                        end={98}
+                                        formattingFn={formatPercentage}
+                                    />
                                 </div>
                                 <div className="text-sm opacity-80">
                                     Customer Satisfaction
@@ -64,7 +79,14 @@ const HeroSection = () => {
                             </div>
                             <div className="text-center">
                                 <div className="text-[28px] font-bold mb-1.5">
-                                    10K+
+                                    <CountUp
+                                        preserveValue
+                                        start={0}
+                                        end={10}
+                                        decimals={1}
+                                        decimalPlaces={1}
+                                    />
+                                    K+
                                 </div>
                                 <div className="text-sm opacity-80">
                                     Teams Using TaskFlow
@@ -72,7 +94,12 @@ const HeroSection = () => {
                             </div>
                             <div className="text-center">
                                 <div className="text-[28px] font-bold mb-1.5">
-                                    35%
+                                    <CountUp
+                                        preserveValue
+                                        start={0}
+                                        end={35}
+                                        formattingFn={formatPercentage}
+                                    />
                                 </div>
                                 <div className="text-sm opacity-80">
                                     Average Productivity Gain

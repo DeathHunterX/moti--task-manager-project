@@ -22,10 +22,10 @@ const PricingCard = ({
     return (
         <div
             className={cn(
-                `bg-white rounded-xl p-8 shadow-lg border border-transparent text-center mx-auto max-w-sm md:max-w-none
-                w-full hover:shadow-lg hover:-translate-y-3 transition-transform duration-300`,
+                `bg-white rounded-xl p-8 shadow-md border border-transparent text-center mx-auto max-w-sm md:max-w-none
+                w-full hover:shadow-xl hover:-translate-y-3 transition-transform duration-300`,
                 mostPopular
-                    ? "border-[#4A6CF7] relative transform scale-105 before:content-['Most Popular']"
+                    ? "border-[#4A6CF7] relative transform scale-105 before:content-['Most_Popular'] before:absolute before:top-0 before:left-1/2 before:-translate-1/2 before:bg-[#4A6CF7] before:text-white before:py-1.5 before:px-4 before:rounded-[20px] before:text-sm before:font-medium"
                     : ""
             )}
         >

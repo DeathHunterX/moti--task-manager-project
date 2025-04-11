@@ -1,11 +1,11 @@
 import React, { ReactNode } from "react";
-import NavBar from "./_components/navbar/NavBar";
+import PublicNavBar from "../../components/shared/navbar/public/PublicNavBar";
 import Footer from "./_components/Footer";
 
 const PublicLayout = ({ children }: { children: ReactNode }) => {
     return (
         <div>
-            <NavBar />
+            <PublicNavBar />
             {children}
             <Footer />
         </div>

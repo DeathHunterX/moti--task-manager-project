@@ -14,7 +14,7 @@ const SocialAuthForm = () => {
         try {
             await signIn(provider, {
                 redirect: false,
-                redirectTo: "/dashboard",
+                redirectTo: "/your-work",
             });
         } catch (error) {
             //   toast({

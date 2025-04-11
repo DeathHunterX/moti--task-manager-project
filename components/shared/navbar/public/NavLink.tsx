@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { publicNavBarMap } from "@/constants";
 import {
     NavigationMenu,
@@ -14,7 +13,7 @@ import Link from "next/link";
 const NavLink = () => {
     return (
         <>
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
                 <ul className="flex flex-col md:flex-row md:gap-3 lg:gap-6">
                     {publicNavBarMap.map((item, idx) => (
                         <li key={idx} className="flex items-center">

@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import HeroSection from "./_components/section/HeroSection";
 import FeatureSection from "./_components/section/FeatureSection";
 import TestimonialSection from "./_components/section/TestimonialSection";
@@ -6,12 +7,12 @@ import CTASection from "./_components/section/CTASection";
 
 export default function Home() {
     return (
-        <div>
+        <Fragment>
             <HeroSection />
             <FeatureSection />
             <TestimonialSection />
             <PricingSection />
             <CTASection />
-        </div>
+        </Fragment>
     );
 }

@@ -5,7 +5,7 @@ import TestimonialCard from "../card/TestimonialCard";
 const TestimonialSection = () => {
     return (
         <section className="py-24 bg-[#f9fafb]">
-            <div className="container mx-auto px-8 md:p-0">
+            <div className="container mx-auto px-8 md:px-4">
                 <div className="text-center mb-14">
                     <h2 className="text-4xl text-[#1e293b] mb-5">
                         Trusted by Thousands of Teams
