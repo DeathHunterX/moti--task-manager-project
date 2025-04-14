@@ -5,7 +5,7 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
     return (
         <div className="">
             <PrivateNavBar />
-            <div className="px-10">{children}</div>
+            {children}
         </div>
     );
 };

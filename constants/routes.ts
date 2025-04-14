@@ -7,10 +7,10 @@ export const publicRoutes: Array<string> = ["/"];
 
 /**
  * An array of routes that are used for authentication
- * These routes will direct logged in users to /workplaces
+ * These routes will direct logged in users to /workspaces
  * @type {string[]}
  */
-export const privateRoutes: Array<string> = ["/your-work", "/workplaces"];
+export const privateRoutes: Array<string> = ["/your-work", "/workspaces"];
 
 /**
  * An array of routes used for authentication
@@ -30,7 +30,7 @@ export const apiAuthPrefix: string = "/api/auth";
  * The default redirect path after logging in
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT = "/workplaces";
+export const DEFAULT_LOGIN_REDIRECT = "/workspaces";
 
 /**
  * A dictionary of authentication routes
@@ -73,7 +73,7 @@ export const PUBLIC_ROUTES_DICT = authRoutes.reduce((acc, route) => {
 /**
  * A dictionary of private routes
  * Converts route paths to uppercase keys for easier access
- * Example: "/workplaces" → "WORKPLACES"
+ * Example: "/workspaces" → "WORKSPACES"
  * @type {Record<string, string>}
  */
 export const PRIVATE_ROUTES_DICT = authRoutes.reduce((acc, route) => {

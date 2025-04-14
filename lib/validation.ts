@@ -43,3 +43,23 @@ export const SignUpSchema = z.object({
             message: "Password must contain at least one special character.",
         }),
 });
+
+export const PaginatedSearchParamsSchema = z.object({
+    page: z.number().int().positive().default(1),
+    pageSize: z.number().int().positive().default(10),
+    query: z.string().optional(),
+    filter: z.string().optional(),
+    sort: z.string().optional(),
+});
+
+export const CreateWorkspaceSchema = z.object({
+    name: z.string().min(2, {
+        message: "Workspace name must be at least 2 characters.",
+    }),
+    image: z
+        .union([
+            z.string().transform((value) => (value === "" ? undefined : value)),
+            z.instanceof(File),
+        ])
+        .optional(),
+});

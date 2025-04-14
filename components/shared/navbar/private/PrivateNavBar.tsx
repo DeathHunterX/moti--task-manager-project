@@ -11,19 +11,22 @@ import {
 import Image from "next/image";
 import React from "react";
 import UserNav from "./UserNav";
+import Link from "next/link";
 
 const PrivateNavBar = () => {
     return (
         <>
-            <header className="border-b-gray-300 border-b px-4 py-2 flex flex-row justify-between items-center">
+            <header className="border-b-gray-300 border-b px-4 py-2 flex flex-row justify-between items-center bg-white relative z-20">
                 <div className="flex flex-row gap-x-1 sm:gap-x-4 items-center">
                     <div className="">
-                        <Image
-                            src="/logo.png"
-                            width={100}
-                            height={50}
-                            alt="Moti logo"
-                        />
+                        <Link href="/your-work">
+                            <Image
+                                src="/logo.png"
+                                width={100}
+                                height={50}
+                                alt="Moti logo"
+                            />
+                        </Link>
                     </div>
 
                     <div className="">
@@ -33,7 +36,7 @@ const PrivateNavBar = () => {
                                 <ChevronDown size={14} />
                             </div>
                             <div className="flex max-[835px]:hidden flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs">
-                                <span className="text-sm">Workplaces</span>
+                                <span className="text-sm">Workspaces</span>
                                 <ChevronDown size={14} />
                             </div>
 

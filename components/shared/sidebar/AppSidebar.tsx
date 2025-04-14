@@ -2,19 +2,16 @@
 
 import * as React from "react";
 import {
-    ArrowUpCircleIcon,
-    BarChartIcon,
-    CameraIcon,
+    AppWindow,
+    AudioWaveform,
+    CircleCheckBig,
     ClipboardListIcon,
+    Cog,
+    Command,
     DatabaseIcon,
-    FileCodeIcon,
     FileIcon,
-    FileTextIcon,
-    FolderIcon,
+    GalleryVerticalEnd,
     HelpCircleIcon,
-    LayoutDashboardIcon,
-    Link,
-    ListIcon,
     SearchIcon,
     SettingsIcon,
     UsersIcon,
@@ -23,45 +20,46 @@ import {
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import { NavDocuments } from "./NavDocuments";
 import { NavMain } from "./NavMain";
-import { NavSecondary } from "./NavSecondary";
-import { NavUser } from "./NavUser";
 import Image from "next/image";
+import { TeamSwitcher } from "./TeamSwitcher";
 
 const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
+    teams: [
+        {
+            name: "Acme Inc",
+            logo: GalleryVerticalEnd,
+            plan: "Enterprise",
+        },
+        {
+            name: "Acme Corp.",
+            logo: AudioWaveform,
+            plan: "Startup",
+        },
+        {
+            name: "Evil Corp.",
+            logo: Command,
+            plan: "Free",
+        },
+    ],
     navMain: [
         {
-            title: "Dashboard",
+            title: "Summary",
             url: "#",
-            icon: LayoutDashboardIcon,
+            icon: AppWindow,
         },
         {
-            title: "Lifecycle",
+            title: "My Tasks",
             url: "#",
-            icon: ListIcon,
+            icon: CircleCheckBig,
         },
         {
-            title: "Analytics",
+            title: "Settings",
             url: "#",
-            icon: BarChartIcon,
-        },
-        {
-            title: "Projects",
-            url: "#",
-            icon: FolderIcon,
+            icon: SettingsIcon,
         },
         {
             title: "Team",
@@ -69,61 +67,24 @@ const data = {
             icon: UsersIcon,
         },
     ],
-    navSecondary: [
-        {
-            title: "Settings",
-            url: "#",
-            icon: SettingsIcon,
-        },
-        {
-            title: "Get Help",
-            url: "#",
-            icon: HelpCircleIcon,
-        },
-        {
-            title: "Search",
-            url: "#",
-            icon: SearchIcon,
-        },
-    ],
-    documents: [
-        {
-            name: "Data Library",
-            url: "#",
-            icon: DatabaseIcon,
-        },
-        {
-            name: "Reports",
-            url: "#",
-            icon: ClipboardListIcon,
-        },
-        {
-            name: "Word Assistant",
-            url: "#",
-            icon: FileIcon,
-        },
-    ],
 };
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
     return (
-        <Sidebar collapsible="offcanvas" {...props}>
+        <Sidebar collapsible="offcanvas" {...props} className="">
             <SidebarHeader className="flex flex-row justify-center items-center">
-                <Image
+                <div className="size-12"></div>
+                {/* <Image
                     src="/logo.png"
                     width={100}
                     height={50}
                     alt="Moti logo"
-                />
+                /> */}
             </SidebarHeader>
             <SidebarContent>
+                <TeamSwitcher teams={data.teams} />
                 <NavMain items={data.navMain} />
-                <NavDocuments items={data.documents} />
-                <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>
-            <SidebarFooter>
-                <NavUser user={data.user} />
-            </SidebarFooter>
         </Sidebar>
     );
 };
