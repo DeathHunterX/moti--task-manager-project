@@ -1,14 +1,14 @@
 "use server";
 
 import { z } from "zod";
-import { SignInSchema } from "@/lib/validation";
+import { SignInSchema } from "@/lib/validation/auth";
 import { ActionResponse, ErrorResponse } from "@/types/server";
 import handleError from "@/lib/handlers/error";
 import { ConflictError, ValidationError } from "@/lib/http-error";
+import UserModel from "@/lib/mongodb/models/user.model";
 
 import { connectToDatabase } from "@/lib/mongodb/mongoose";
 import { signIn } from "@/auth";
-import User from "@/lib/mongodb/models/user.model";
 
 export const signInWithCredentials = async (
     params: z.infer<typeof SignInSchema>
@@ -28,7 +28,7 @@ export const signInWithCredentials = async (
 
         const { email, password } = validatedFields.data;
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await UserModel.findOne({ email });
 
         if (!existingUser) {
             return handleError(

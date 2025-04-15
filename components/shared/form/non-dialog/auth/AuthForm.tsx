@@ -24,13 +24,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-// import { toast } from "@/hooks/use-toast";
 import { AUTH_ROUTES_DICT, DEFAULT_LOGIN_REDIRECT } from "@/constants/routes";
 import { ActionResponse } from "@/types/server";
 
 //
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ErrorToastMsg } from "@/components/shared/Toast";
 
 interface AuthFormProps<T extends FieldValues> {
     schema: ZodType<T>;
@@ -54,7 +54,6 @@ const AuthForm = <T extends FieldValues>({
     const handleSubmit: SubmitHandler<T> = async (data: T) => {
         const result = (await onSubmit(data)) as ActionResponse;
         if (result?.success) {
-            console.log(result);
             // toast({
             //     title: "Success",
             //     description:
@@ -71,11 +70,10 @@ const AuthForm = <T extends FieldValues>({
                 window.location.reload();
             }
         } else {
-            // toast({
-            //     title: `Error ${result?.status}`,
-            //     description: result?.error?.message,
-            //     variant: "destructive",
-            // });
+            ErrorToastMsg({
+                title: `Error ${result?.status}`,
+                description: result?.error?.message ?? "",
+            });
         }
     };
 

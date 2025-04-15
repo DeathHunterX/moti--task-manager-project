@@ -6,7 +6,7 @@ import {
     NotFoundError,
     ValidationError,
 } from "@/lib/http-error";
-import { SignUpSchema } from "@/lib/validation";
+import { SignUpSchema } from "@/lib/validation/auth";
 import { ActionResponse, ErrorResponse } from "@/types/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";

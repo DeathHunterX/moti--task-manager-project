@@ -78,10 +78,11 @@ const ImageInputField = <S extends FieldValues>({
                                 disabled={form.formState.isSubmitting}
                             />
                             <Button
+                                variant="teritary"
                                 type="button"
                                 disabled={form.formState.isSubmitting}
                                 size="sm"
-                                className="w-fit mt-2"
+                                className="w-fit mt-2 "
                                 onClick={() => inputRef.current?.click()}
                             >
                                 Upload Image

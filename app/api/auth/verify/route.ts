@@ -1,6 +1,6 @@
 import { connectToDatabase } from "@/lib/mongodb/mongoose";
 import handleError from "@/lib/handlers/error";
-import { SignInSchema } from "@/lib/validation";
+import { SignInSchema } from "@/lib/validation/auth";
 import { getAccountById, getUserByEmail } from "@/lib/actions/user.action";
 import { NotFoundError, ValidationError } from "@/lib/http-error";
 

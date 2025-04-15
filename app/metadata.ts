@@ -11,7 +11,7 @@ export const AppMetadata = {
     },
     description,
     icons: {
-        icon: "/logo-blue.svg",
+        icon: "/logo-without-name.png",
     },
     keywords: ["Moti", "Task Manager System"],
     creator: author,

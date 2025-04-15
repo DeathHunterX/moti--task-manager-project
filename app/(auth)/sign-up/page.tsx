@@ -1,8 +1,8 @@
 "use client";
 import AuthPageWrapper from "@/components/shared/wrapper/AuthPageWrapper";
-import SocialAuthForm from "@/components/shared/form/auth/SocialAuthForm";
-import AuthForm from "@/components/shared/form/auth/AuthForm";
-import { SignUpSchema } from "@/lib/validation";
+import SocialAuthForm from "@/components/shared/form/non-dialog/auth/SocialAuthForm";
+import AuthForm from "@/components/shared/form/non-dialog/auth/AuthForm";
+import { SignUpSchema } from "@/lib/validation/auth";
 import { signUpWithCredentials } from "@/lib/actions/auth/signUp.action";
 import { Metadata } from "next";
 

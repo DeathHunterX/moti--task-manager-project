@@ -1,13 +1,12 @@
 import AppSidebar from "@/components/shared/sidebar/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import React from "react";
 
 const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <SidebarProvider className="min-h-0">
             <AppSidebar />
-            <div className="">
-                <SidebarTrigger />
+            <div className="relative mt-2 w-full">
+                <SidebarTrigger className="absolute top-1 left-3" />
                 {children}
             </div>
         </SidebarProvider>

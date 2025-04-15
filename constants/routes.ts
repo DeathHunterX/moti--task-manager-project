@@ -10,7 +10,11 @@ export const publicRoutes: Array<string> = ["/"];
  * These routes will direct logged in users to /workspaces
  * @type {string[]}
  */
-export const privateRoutes: Array<string> = ["/your-work", "/workspaces"];
+export const privateRoutes: Array<string> = [
+    "/your-work",
+    "/workspaces",
+    "/workspaces/:workspaceId*",
+];
 
 /**
  * An array of routes used for authentication

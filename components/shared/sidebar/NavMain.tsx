@@ -25,6 +25,9 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 
+import { useParams } from "next/navigation";
+import Link from "next/link";
+
 export function NavMain({
     items,
 }: {
@@ -34,49 +37,26 @@ export function NavMain({
         icon: LucideIcon;
     }[];
 }) {
-    const { isMobile } = useSidebar();
+    const { state, isMobile } = useSidebar();
+    const { workspaceId } = useParams();
 
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
+            <SidebarGroupLabel asChild>Overview</SidebarGroupLabel>
             <SidebarMenu>
-                {items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild>
-                            <a href={item.url}>
-                                <item.icon />
-                                <span>{item.title}</span>
-                            </a>
-                        </SidebarMenuButton>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <SidebarMenuAction showOnHover>
-                                    <MoreHorizontal />
-                                    <span className="sr-only">More</span>
-                                </SidebarMenuAction>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                className="w-48 rounded-lg"
-                                side={isMobile ? "bottom" : "right"}
-                                align={isMobile ? "end" : "start"}
-                            >
-                                <DropdownMenuItem>
-                                    <Folder className="text-muted-foreground" />
-                                    <span>View Project</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Forward className="text-muted-foreground" />
-                                    <span>Share Project</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <Trash2 className="text-muted-foreground" />
-                                    <span>Delete Project</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </SidebarMenuItem>
-                ))}
+                {items.map((item) => {
+                    const fullHref = `/workspaces/${workspaceId}${item.url}`;
+                    return (
+                        <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton tooltip={item.title} asChild>
+                                <Link href={fullHref}>
+                                    {item.icon && <item.icon />}
+                                    <span>{item.title}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    );
+                })}
             </SidebarMenu>
         </SidebarGroup>
     );

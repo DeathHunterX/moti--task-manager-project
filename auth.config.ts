@@ -6,8 +6,7 @@ import { type NextAuthConfig } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { SignInSchema } from "./lib/validation";
-import { verifyUserCredentials } from "./lib/actions/auth/signUp.action";
+import { SignInSchema } from "@/lib/validation/auth";
 
 export default {
     providers: [

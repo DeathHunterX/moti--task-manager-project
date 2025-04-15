@@ -22,8 +22,22 @@ export function formatPercentage(
 
 export function formatCurrency(value: number) {
     return Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 0,
     }).format(value);
-  }
+}
+
+export function generateInviteCode(length: number) {
+    const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+            Math.floor(Math.random() * characters.length)
+        );
+    }
+
+    return result;
+}

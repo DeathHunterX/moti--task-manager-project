@@ -3,16 +3,7 @@
 import * as React from "react";
 import {
     AppWindow,
-    AudioWaveform,
     CircleCheckBig,
-    ClipboardListIcon,
-    Cog,
-    Command,
-    DatabaseIcon,
-    FileIcon,
-    GalleryVerticalEnd,
-    HelpCircleIcon,
-    SearchIcon,
     SettingsIcon,
     UsersIcon,
 } from "lucide-react";
@@ -25,65 +16,51 @@ import {
 
 import { NavMain } from "./NavMain";
 import Image from "next/image";
-import { TeamSwitcher } from "./TeamSwitcher";
-
-const data = {
-    teams: [
-        {
-            name: "Acme Inc",
-            logo: GalleryVerticalEnd,
-            plan: "Enterprise",
-        },
-        {
-            name: "Acme Corp.",
-            logo: AudioWaveform,
-            plan: "Startup",
-        },
-        {
-            name: "Evil Corp.",
-            logo: Command,
-            plan: "Free",
-        },
-    ],
-    navMain: [
-        {
-            title: "Summary",
-            url: "#",
-            icon: AppWindow,
-        },
-        {
-            title: "My Tasks",
-            url: "#",
-            icon: CircleCheckBig,
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: SettingsIcon,
-        },
-        {
-            title: "Team",
-            url: "#",
-            icon: UsersIcon,
-        },
-    ],
-};
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { NavProject } from "./NavProject";
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+    const data = {
+        navMain: [
+            {
+                title: "Summary",
+                url: "#",
+                icon: AppWindow,
+            },
+            {
+                title: "My Tasks",
+                url: "#",
+                icon: CircleCheckBig,
+            },
+            {
+                title: "Settings",
+                url: "/settings",
+                icon: SettingsIcon,
+            },
+            {
+                title: "Team",
+                url: "#",
+                icon: UsersIcon,
+            },
+        ],
+    };
+
     return (
-        <Sidebar collapsible="offcanvas" {...props} className="">
+        <Sidebar collapsible="icon" {...props}>
             <SidebarHeader className="flex flex-row justify-center items-center">
-                <div className="size-12"></div>
-                {/* <Image
+                <div className="size-12 hidden md:block"></div>
+                <Image
                     src="/logo.png"
                     width={100}
                     height={50}
                     alt="Moti logo"
-                /> */}
+                    className="block md:hidden"
+                />
             </SidebarHeader>
-            <SidebarContent>
-                <TeamSwitcher teams={data.teams} />
+            <SidebarContent className="px-1.5">
+                <WorkspaceSwitcher />
                 <NavMain items={data.navMain} />
+                <NavProject items={data.navMain} />
             </SidebarContent>
         </Sidebar>
     );

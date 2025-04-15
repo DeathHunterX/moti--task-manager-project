@@ -4,7 +4,7 @@ import { ActionResponse, ErrorResponse } from "@/types/server";
 import { v2 as cloudinary } from "cloudinary";
 import handleError from "../handlers/error";
 import { BadRequestError } from "../http-error";
-import path from "path";
+import path, { resolve } from "path";
 import { tmpdir } from "os";
 import { writeFile } from "fs/promises";
 
@@ -52,6 +52,36 @@ export const uploadImage = async (
             data: { public_id: result.public_id, url: result.secure_url },
             status: 201,
         };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const deleteImage = async ({
+    params,
+}: {
+    params: { public_id: string };
+}): Promise<ActionResponse> => {
+    try {
+        const { public_id } = params;
+        if (!public_id) {
+            throw new BadRequestError("No image selected!");
+        }
+
+        await cloudinary.uploader
+            .destroy(
+                public_id,
+                { resource_type: "image" },
+                async (err, result) => {
+                    if (err) throw err;
+                    resolve(result);
+                }
+            )
+            .then((result) => {
+                console.log(result);
+            });
+
+        return { success: true, status: 200 };
     } catch (error) {
         return handleError(error) as ErrorResponse;
     }

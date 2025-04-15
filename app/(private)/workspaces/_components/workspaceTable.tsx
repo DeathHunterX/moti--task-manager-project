@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import {
     Table,
@@ -25,11 +25,27 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const WorkspaceTable = ({ data }: { data: Workspace[] }) => {
-    console.log(data);
     return (
         <div className="">
             <Table>
-                <TableCaption>A list of your recent workspaces.</TableCaption>
+                <TableCaption>
+                    {data.length == 0 ? (
+                        <div className="flex flex-col items-center w-full">
+                            <Image
+                                src="/data-not-found.png"
+                                width={300}
+                                height={300}
+                                alt="Not found data"
+                            ></Image>
+                            <h2>
+                                No projects were found that match your search
+                            </h2>
+                            <p>Try using specific project names or terms.</p>
+                        </div>
+                    ) : (
+                        <>A list of your recent workspaces.</>
+                    )}
+                </TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead className="py-1 px-2">Name</TableHead>
@@ -49,16 +65,24 @@ const WorkspaceTable = ({ data }: { data: Workspace[] }) => {
                                         href={`/workspaces/${item._id}`}
                                         className="flex flex-row gap-x-2 items-center hover:underline"
                                     >
-                                        <Image
-                                            src={
-                                                typeof item.image === "string"
-                                                    ? item.image
-                                                    : ""
-                                            }
-                                            width={50}
-                                            height={50}
-                                            alt={`${item.name} logo`}
-                                        />
+                                        {(item.image as string).trim() !==
+                                        "" ? (
+                                            <div className="size-9 relative">
+                                                <Image
+                                                    src={
+                                                        typeof item.image ===
+                                                        "string"
+                                                            ? item.image
+                                                            : ""
+                                                    }
+                                                    fill
+                                                    alt={`${item.name} logo`}
+                                                    className="rounded-md"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="size-9 bg-gradient-to-bl from-violet-500 to-fuchsia-500 rounded-md" />
+                                        )}
                                         <p className="">{item.name}</p>
                                     </Link>
                                 </TableCell>
@@ -95,12 +119,7 @@ const WorkspaceTable = ({ data }: { data: Workspace[] }) => {
                             </TableRow>
                         ))
                     ) : (
-                        <div className="">
-                            <h2>
-                                No projects were found that match your search
-                            </h2>
-                            <p>Try using specific project names or terms.</p>
-                        </div>
+                        <Fragment></Fragment>
                     )}
                 </TableBody>
             </Table>
