@@ -4,12 +4,12 @@ import { SignInSchema } from "@/lib/validation/auth";
 import { getAccountById, getUserByEmail } from "@/lib/actions/user.action";
 import { NotFoundError, ValidationError } from "@/lib/http-error";
 
-import { ErrorResponse } from "@/types/server";
+import { APIErrorResponse } from "@/types/server";
 import bcrypt from "bcryptjs";
 
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
     try {
         await connectToDatabase();
         const body = await request.json();
@@ -56,6 +56,6 @@ export async function POST(request: Request) {
             { status: 200 }
         );
     } catch (error) {
-        return handleError(error, "api") as ErrorResponse;
+        return handleError(error, "api") as APIErrorResponse;
     }
 }
