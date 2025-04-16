@@ -7,6 +7,7 @@ import AuthProvider from "@/providers/AuthProvider";
 import { QueryProvider } from "@/providers/QueryProvider";
 
 const interFont = Inter({
+    subsets: ["latin"],
     variable: "--font-",
 });
 
