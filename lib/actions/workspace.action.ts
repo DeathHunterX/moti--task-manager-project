@@ -150,26 +150,56 @@ export const getAllWorkspaces = async (
 
     const filterQuery: FilterQuery<typeof WorkspaceModel> = {};
 
-    try {
-        const totalWorkspace = await WorkspaceModel.countDocuments(filterQuery);
+    const objectUserId = new mongoose.Types.ObjectId(userId!);
 
-        const workspaces = await WorkspaceModel.find({
-            ...filterQuery,
-        })
-            .lean()
-            .skip(skip)
-            .limit(limit);
+    try {
+        const pipeline: any[] = [
+            {
+                $lookup: {
+                    from: "members",
+                    localField: "_id",
+                    foreignField: "workspaceId",
+                    as: "memberInfo",
+                },
+            },
+            {
+                $unwind: "$memberInfo", // ← Flatten the memberInfo array
+            },
+            {
+                $match: {
+                    "memberInfo.userId": objectUserId,
+                    "memberInfo.role": { $in: ["MEMBER", "ADMIN"] },
+                },
+            },
+        ];
+
+        if (query) {
+            pipeline.push({
+                $match: {
+                    name: { $regex: query, $options: "i" },
+                },
+            });
+        }
+
+        pipeline.push({ $skip: skip }, { $limit: limit + 1 }); // fetch one extra for "isNext"
+
+        const workspaces = await WorkspaceModel.aggregate(pipeline);
+
+        const isNext = workspaces.length > pageSize;
+        const trimmedWorkspaces = isNext
+            ? workspaces.slice(0, pageSize)
+            : workspaces;
+
+        console.log(workspaces);
 
         if (!workspaces) {
             throw new Error("Failed to get all workspaces available!");
         }
 
-        const isNext = totalWorkspace > skip + workspaces.length;
-
         return {
             success: true,
             data: {
-                workspaces: JSON.parse(JSON.stringify(workspaces)),
+                workspaces: JSON.parse(JSON.stringify(trimmedWorkspaces)),
                 isNext,
             },
             status: 201,
