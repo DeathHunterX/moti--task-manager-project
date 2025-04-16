@@ -19,3 +19,12 @@ interface DeleteWorkspaceParams {
 interface GetWorkspaceByIdParams {
     workspaceId: string;
 }
+
+interface ResetInvitationCodeByWorkspaceIdParams {
+    workspaceId: string;
+}
+
+interface JoinWorkspaceByInviteCodeParams {
+    workspaceId: string;
+    inviteCode: string;
+}

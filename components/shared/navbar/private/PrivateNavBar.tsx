@@ -16,7 +16,7 @@ import Link from "next/link";
 const PrivateNavBar = () => {
     return (
         <>
-            <header className="border-b-gray-300 border-b px-4 py-2 flex flex-row justify-between items-center bg-white relative z-20">
+            <header className="border-b-gray-300 border-b px-4 py-2 flex flex-row justify-between items-center bg-white z-20 fixed top-0 w-full">
                 <div className="flex flex-row gap-x-1 sm:gap-x-4 items-center">
                     <div className="">
                         <Link href="/your-work">

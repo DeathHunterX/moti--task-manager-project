@@ -5,9 +5,12 @@ import {
     editWorkspace,
     getAllWorkspaces,
     getWorkspaceById,
+    joinWorkspaceByInviteCode,
+    resetInviteCode,
 } from "@/lib/actions/workspace.action";
 import { RequestError } from "@/lib/http-error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 
 export const useGetWorkspaces = () => {
@@ -48,7 +51,10 @@ export const useGetWorkspace = (
                 throw new RequestError(status, `HTTP error: ${status}`);
             }
 
-            return response.data;
+            if (!response.data) {
+                throw new Error("Invalid workspace data received");
+            }
+            return response.data as Workspace;
         },
     });
     return query;
@@ -157,5 +163,89 @@ export const useDeleteWorkspace = () => {
             });
         },
     });
+    return mutation;
+};
+
+export const useResetWorkspaceInviteCode = () => {
+    const queryClient = useQueryClient();
+    const { workspaceId } = useParams();
+
+    const mutation = useMutation({
+        mutationFn: async (data: ResetInvitationCodeByWorkspaceIdParams) => {
+            const response = await resetInviteCode(data);
+
+            if (!response.success) {
+                // Throw an error if the response indicates failure
+                const status = response?.status ?? 500;
+                const message =
+                    response?.error?.message || "Something went wrong";
+                throw new Error(`${status}: ${message}`);
+            }
+
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success("Successfully reset workspace invitation code!");
+
+            queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+            queryClient.invalidateQueries({
+                queryKey: ["workspace", { id: workspaceId as string }],
+            });
+        },
+        onError: (error: any) => {
+            const [status, errorMessage] = error.message.split(":");
+            ErrorToastMsg({
+                title: `Error ${status}`,
+                description:
+                    errorMessage ||
+                    "Something went wrong while reset workspace invitation code!",
+            });
+        },
+    });
+
+    return mutation;
+};
+
+export const useJoinWorkspaceByInviteCode = () => {
+    const queryClient = useQueryClient();
+    const { workspaceId } = useParams();
+
+    const mutation = useMutation<
+        Workspace,
+        Error,
+        JoinWorkspaceByInviteCodeParams
+    >({
+        mutationFn: async (data: JoinWorkspaceByInviteCodeParams) => {
+            const response = await joinWorkspaceByInviteCode(data);
+
+            if (!response.success || !response.data) {
+                // Throw an error if the response indicates failure or data is invalid
+                const status = response?.status ?? 500;
+                const message =
+                    response?.error?.message || "Something went wrong";
+                throw new Error(`${status}: ${message}`);
+            }
+
+            return response.data as Workspace;
+        },
+        onSuccess: () => {
+            toast.success("Successfully join workspace!");
+
+            queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+            queryClient.invalidateQueries({
+                queryKey: ["workspace", { id: workspaceId as string }],
+            });
+        },
+        onError: (error: any) => {
+            const [status, errorMessage] = error.message.split(":");
+            ErrorToastMsg({
+                title: `Error ${status}`,
+                description:
+                    errorMessage ||
+                    "Something went wrong while use invite code to join workspace!",
+            });
+        },
+    });
+
     return mutation;
 };

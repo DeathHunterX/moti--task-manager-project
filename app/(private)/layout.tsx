@@ -6,7 +6,7 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
     return (
         <ModalProvider>
             <PrivateNavBar />
-            {children}
+            <div className="mt-16">{children}</div>
         </ModalProvider>
     );
 };

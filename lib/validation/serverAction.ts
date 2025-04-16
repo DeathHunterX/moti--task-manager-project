@@ -11,3 +11,10 @@ export const GetWorkspaceByIdSchema = z.object({
 });
 
 export const DeleteWorkspaceSchema = GetWorkspaceByIdSchema.extend({});
+
+export const ResetInvitationCodeByWorkspaceIdSchema =
+    GetWorkspaceByIdSchema.extend({});
+
+export const JoinWorkspaceByInviteCodeSchema = GetWorkspaceByIdSchema.extend({
+    inviteCode: z.string({ message: "Invite code is required" }),
+});

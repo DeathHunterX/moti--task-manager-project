@@ -11,12 +11,19 @@ import {
 import {
     DeleteWorkspaceSchema,
     GetWorkspaceByIdSchema,
+    JoinWorkspaceByInviteCodeSchema,
+    ResetInvitationCodeByWorkspaceIdSchema,
 } from "../validation/serverAction";
 
 import mongoose, { FilterQuery } from "mongoose";
 import WorkspaceModel from "../mongodb/models/workspace.models";
 import MemberModel from "../mongodb/models/member.model";
-import { UnauthorizedError } from "../http-error";
+import {
+    BadRequestError,
+    InternalServerError,
+    NotFoundError,
+    UnauthorizedError,
+} from "../http-error";
 
 import { generateInviteCode } from "../utils";
 import { revalidatePath } from "next/cache";
@@ -86,7 +93,7 @@ export const createWorkspace = async (
         );
 
         if (!newWorkspace) {
-            throw new Error("Failed to create workspace");
+            throw new InternalServerError("Failed to create workspace");
         }
 
         const [newMember] = await MemberModel.create(
@@ -101,7 +108,9 @@ export const createWorkspace = async (
         );
 
         if (!newMember) {
-            throw new Error("Failed to provide admin role in this workspace!");
+            throw new InternalServerError(
+                "Failed to provide admin role in this workspace!"
+            );
         }
 
         // *End transaction
@@ -146,7 +155,6 @@ export const getAllWorkspaces = async (
 
         const workspaces = await WorkspaceModel.find({
             ...filterQuery,
-            userId,
         })
             .lean()
             .skip(skip)
@@ -185,12 +193,10 @@ export const getWorkspaceById = async (
     }
 
     const { workspaceId } = validationResult.params!;
-    const userId = validationResult.session?.user?.id;
 
     try {
         const workspace = await WorkspaceModel.findOne({
             _id: workspaceId,
-            userId,
         });
 
         if (!workspace) {
@@ -237,7 +243,7 @@ export const editWorkspace = async (
         const existingWorkspace = await WorkspaceModel.findById(workspaceId);
 
         if (!existingWorkspace) {
-            throw new Error("Workspace not found!");
+            throw new NotFoundError("Workspace not found!");
         }
 
         // Check if the image has changed
@@ -261,7 +267,9 @@ export const editWorkspace = async (
                     },
                 });
                 if (!deleteOldImg.success) {
-                    throw new Error("Failed to delete old image!");
+                    throw new InternalServerError(
+                        "Failed to delete old image!"
+                    );
                 }
             }
         } else if (typeof image === "string") {
@@ -347,6 +355,87 @@ export const deleteWorkspace = async (
         return {
             success: true,
             data: JSON.parse(JSON.stringify(workspace)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const resetInviteCode = async (
+    params: ResetInvitationCodeByWorkspaceIdParams
+): Promise<ActionResponse> => {
+    const validationResult = await action({
+        params,
+        schema: ResetInvitationCodeByWorkspaceIdSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { workspaceId } = validationResult.params!;
+    const userId = validationResult.session?.user.id!;
+
+    try {
+        await checkAdminRole(workspaceId, userId);
+
+        const workspace = await WorkspaceModel.findOneAndUpdate(
+            { _id: workspaceId },
+            {
+                inviteCode: generateInviteCode(6),
+            }
+        );
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(workspace)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const joinWorkspaceByInviteCode = async (
+    params: JoinWorkspaceByInviteCodeParams
+): Promise<ActionResponse> => {
+    const validationResult = await action({
+        params,
+        schema: JoinWorkspaceByInviteCodeSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { workspaceId, inviteCode } = validationResult.params!;
+    const userId = validationResult.session?.user.id!;
+
+    try {
+        const workspace = await WorkspaceModel.findOne({ _id: workspaceId });
+
+        if (workspace?.inviteCode !== inviteCode) {
+            throw new BadRequestError("Invalid invite code!");
+        }
+
+        const [newMember] = await MemberModel.create([
+            {
+                userId,
+                workspaceId: workspace._id,
+                role: "MEMBER",
+            },
+        ]);
+
+        if (!newMember) {
+            throw new InternalServerError("Failed to add a member");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(newMember)),
             status: 200,
         };
     } catch (error) {

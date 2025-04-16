@@ -3,6 +3,7 @@ interface Workspace {
     name: string;
     image: File | string;
     userId: string;
+    inviteCode: string;
 }
 
 interface PaginatedSearchParams {

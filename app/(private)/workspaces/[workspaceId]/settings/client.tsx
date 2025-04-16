@@ -1,15 +1,19 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import WorkspaceForm from "@/components/shared/form/dialog/workspace/WorkspaceForm";
 import {
     useDeleteWorkspace,
     useGetWorkspace,
+    useResetWorkspaceInviteCode,
 } from "@/hooks/actions/useWorkspaces";
 import { useParams } from "next/navigation";
 import PageLoader from "@/components/shared/PageLoader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
+import { CopyIcon } from "lucide-react";
 
 const WorkspaceSettingsClient = () => {
     const { workspaceId } = useParams();
@@ -22,15 +26,24 @@ const WorkspaceSettingsClient = () => {
         isPending: isDeletingWorkspacePending,
     } = useDeleteWorkspace();
 
+    const {
+        mutate: resetWorkspaceInviteCode,
+        isPending: isResetingWorkspaceInviteCode,
+    } = useResetWorkspaceInviteCode();
+
     const [DeleteDialog, confirmDelete] = useConfirm(
         "Delete Workspace",
         "This action cannot be undone.",
         "destructive"
     );
 
-    if (isPending) {
-        return <PageLoader />;
-    }
+    const [ResetDialog, confirmReset] = useConfirm(
+        "Reset Invite Link",
+        "This will invalidate the current invite link",
+        "destructive"
+    );
+
+    const [fullInviteLink, setFullInviteLink] = useState<string>("");
 
     const handleDelete = async () => {
         const ok = await confirmDelete();
@@ -47,9 +60,36 @@ const WorkspaceSettingsClient = () => {
         );
     };
 
+    const handleResetInviteCode = async () => {
+        const ok = await confirmReset();
+
+        if (!ok) return;
+
+        resetWorkspaceInviteCode({ workspaceId: data?._id as string });
+    };
+
+    useEffect(() => {
+        if (data?._id && data?.inviteCode) {
+            setFullInviteLink(
+                `${window.location.origin}/workspaces/${data._id}/join/${data.inviteCode}`
+            );
+        }
+    }, [data]);
+
+    const handleCopyInviteLink = () => {
+        navigator.clipboard
+            .writeText(fullInviteLink)
+            .then(() => toast.success("Invite link copied to clipboard."));
+    };
+
+    if (isPending) {
+        return <PageLoader />;
+    }
+
     return (
         <div className="px-4 w-full ">
             <DeleteDialog />
+            <ResetDialog />
 
             <div className="flex flex-row justify-between">
                 <h1 className="ms-10 mb-1.5 text-2xl text-[#172B4D]">
@@ -66,12 +106,50 @@ const WorkspaceSettingsClient = () => {
                 <Card className="shadow-xl">
                     <CardContent className="p-7">
                         <div className="flex flex-col">
+                            <h3 className="font-bold">Invite Members</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Use the invite link to add members to your
+                                workspace.
+                            </p>
+
+                            <div className="mt-4">
+                                <div className="flex items-center gap-x-2">
+                                    <Input disabled value={fullInviteLink} />
+                                    <Button
+                                        onClick={handleCopyInviteLink}
+                                        variant="secondary"
+                                        className="size-12"
+                                    >
+                                        <CopyIcon className="size-5" />
+                                    </Button>
+                                </div>
+                            </div>
+                            {/* <DottedSeparator className="py-7" /> */}
+                            <Button
+                                className="mt-6 w-fit ml-auto"
+                                size="sm"
+                                variant="destructive"
+                                type="button"
+                                disabled={isResetingWorkspaceInviteCode}
+                                onClick={handleResetInviteCode}
+                            >
+                                Reset Invite Link
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="flex flex-row justify-center mt-10">
+                <Card className="shadow-xl">
+                    <CardContent className="p-7">
+                        <div className="flex flex-col">
                             <h3 className="font-bold">Danger Zone</h3>
                             <p className="text-sm text-muted-foreground">
                                 Deleting a workspace is a irreversible and will
                                 remove all associated data.
                             </p>
-                            {/* <DottedSeparator className="py-7" /> */}
+
                             <Button
                                 className="mt-6 w-fit ml-auto"
                                 size="sm"

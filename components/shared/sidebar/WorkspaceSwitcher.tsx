@@ -67,7 +67,7 @@ export function WorkspaceSwitcher() {
 
     if (!activeTeam) {
         return (
-            <div className="flex justify-center items-center h-full text-muted-foreground">
+            <div className="flex justify-center items-center text-muted-foreground">
                 No active team found.
             </div>
         );

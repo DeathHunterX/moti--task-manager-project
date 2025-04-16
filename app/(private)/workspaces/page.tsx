@@ -14,7 +14,7 @@ const WorkspacesPage = async ({ searchParams }: SearchParams) => {
     const { workspaces, isNext } = workspaceData.data || {};
 
     return (
-        <div className="mt-6 px-10">
+        <div className="px-10">
             <WorkspacesClient workspaces={workspaces || []} />
         </div>
     );
