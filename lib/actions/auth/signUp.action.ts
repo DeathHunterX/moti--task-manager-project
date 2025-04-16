@@ -14,7 +14,7 @@ import bcrypt from "bcryptjs";
 import User from "@/lib/mongodb/models/user.model";
 import Account from "@/lib/mongodb/models/account.model";
 import { connectToDatabase } from "@/lib/mongodb/mongoose";
-import { getAccountById, getUserByEmail } from "../user.action";
+import { getAccountById, getUserByEmail } from "../queries.action";
 
 export const signUpWithCredentials = async (
     params: z.infer<typeof SignUpSchema>

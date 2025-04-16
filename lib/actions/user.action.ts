@@ -1,26 +1,36 @@
 "use server";
 
-// import { Account } from "next-auth";
-import User from "../mongodb/models/user.model";
-import accountModel from "../mongodb/models/account.model";
-import { connectToDatabase } from "../mongodb/mongoose";
+import { ActionResponse, ErrorResponse } from "@/types/server";
+import handleError from "../handlers/error";
+import action from "../handlers/action";
+import { GetUserAccountSchema } from "../validation/serverAction";
 
-export const getUserByEmail = async (email: string) => {
-    await connectToDatabase();
-    const user = await User.findOne({ email });
+// Model
+import UserModel from "../mongodb/models/user.model";
 
-    return user;
-};
+export const getUserAccount = async (): Promise<ActionResponse> => {
+    const validationResult = await action({
+        authorize: true,
+    });
 
-export const getUserById = async (id: string) => {
-    await connectToDatabase();
-    const user = await User.findOne({ _id: id });
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+    const userId = validationResult.session?.user.id!;
 
-    return user;
-};
+    try {
+        const userInfo = await UserModel.findOne({ _id: userId });
 
-export const getAccountById = async (id: string) => {
-    await connectToDatabase();
-    const account = await accountModel.findOne({ userId: id });
-    return account;
+        if (!userInfo) {
+            throw new Error("Failed to get user!");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(userInfo)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
 };

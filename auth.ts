@@ -9,7 +9,7 @@ import client from "@/lib/mongodb/mongodb";
 import authConfig from "./auth.config";
 import type { JWT } from "next-auth/jwt";
 
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/actions/queries.action";
 
 declare module "next-auth" {
     interface Session {

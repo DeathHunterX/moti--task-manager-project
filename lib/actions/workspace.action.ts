@@ -8,14 +8,46 @@ import {
     PaginatedSearchParamsSchema,
     UpdateWorkspaceSchema,
 } from "../validation";
+import {
+    DeleteWorkspaceSchema,
+    GetWorkspaceByIdSchema,
+} from "../validation/serverAction";
+
+import mongoose, { FilterQuery } from "mongoose";
+import WorkspaceModel from "../mongodb/models/workspace.models";
+import MemberModel from "../mongodb/models/member.model";
+import { UnauthorizedError } from "../http-error";
+
+import { generateInviteCode } from "../utils";
+import { revalidatePath } from "next/cache";
 import { deleteImage, uploadImage } from "./image.action";
 
-import WorkspaceModel from "../mongodb/models/workspace.models";
-import { revalidatePath } from "next/cache";
-import mongoose, { FilterQuery } from "mongoose";
-import MemberModel from "../mongodb/models/member.model";
-import { generateInviteCode } from "../utils";
-import { UnauthorizedError } from "../http-error";
+const getCloudinaryPublicId = (url: string) =>
+    url
+        .split("/upload/")[1]
+        .split("/")
+        .slice(1)
+        .join("/")
+        .replace(/\.[^/.]+$/, "");
+
+/**
+ * Checks if the user has an admin role for the specified workspace.
+ * @param workspaceId - The ID of the workspace.
+ * @param userId - The ID of the user.
+ * @throws UnauthorizedError if the user is not an admin.
+ */
+export const checkAdminRole = async (
+    workspaceId: string,
+    userId: string
+): Promise<void> => {
+    const member = await MemberModel.findOne({ workspaceId, userId });
+
+    if (!member || member.role !== "ADMIN") {
+        throw new UnauthorizedError(
+            "Unauthorized! You don't have permission to access this workspace!"
+        );
+    }
+};
 
 export const createWorkspace = async (
     params: CreateWorkspaceParams
@@ -37,7 +69,6 @@ export const createWorkspace = async (
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    console.log("image: ", image);
     try {
         const handleUploadImg =
             image instanceof File ? await uploadImage(image) : null;
@@ -58,19 +89,22 @@ export const createWorkspace = async (
             throw new Error("Failed to create workspace");
         }
 
-        const newMember = await MemberModel.create(
-            {
-                userId,
-                workspaceId: newWorkspace._id,
-                role: "ADMIN",
-            },
-            { session }
+        const [newMember] = await MemberModel.create(
+            [
+                {
+                    userId,
+                    workspaceId: newWorkspace._id,
+                    role: "ADMIN",
+                },
+            ],
+            { session, new: true }
         );
 
         if (!newMember) {
             throw new Error("Failed to provide admin role in this workspace!");
         }
 
+        // *End transaction
         await session.commitTransaction();
 
         revalidatePath("/workspaces");
@@ -86,7 +120,7 @@ export const createWorkspace = async (
     }
 };
 
-export const getAllWorkspace = async (
+export const getAllWorkspaces = async (
     params: PaginatedSearchParams
 ): Promise<ActionResponse<{ workspaces: Workspace[]; isNext: boolean }>> => {
     const validationResult = await action({
@@ -118,6 +152,10 @@ export const getAllWorkspace = async (
             .skip(skip)
             .limit(limit);
 
+        if (!workspaces) {
+            throw new Error("Failed to get all workspaces available!");
+        }
+
         const isNext = totalWorkspace > skip + workspaces.length;
 
         return {
@@ -127,6 +165,42 @@ export const getAllWorkspace = async (
                 isNext,
             },
             status: 201,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const getWorkspaceById = async (
+    params: GetWorkspaceByIdParams
+): Promise<ActionResponse<Workspace>> => {
+    const validationResult = await action({
+        params,
+        schema: GetWorkspaceByIdSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { workspaceId } = validationResult.params!;
+    const userId = validationResult.session?.user?.id;
+
+    try {
+        const workspace = await WorkspaceModel.findOne({
+            _id: workspaceId,
+            userId,
+        });
+
+        if (!workspace) {
+            throw new Error("Failed to get workspace!");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(workspace)),
+            status: 200,
         };
     } catch (error) {
         return handleError(error) as ErrorResponse;
@@ -154,14 +228,11 @@ export const editWorkspace = async (
      * - Check image has changed, if there are any changed, upload new pic and remove old one, else pass it
      * */
 
+    // *Start transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-        const member = await MemberModel.findOne({ workspaceId, userId });
-
-        if (!member || member?.role !== "ADMIN") {
-            throw new UnauthorizedError(
-                "Unauthorized! You don't have permission to access it!"
-            );
-        }
+        await checkAdminRole(workspaceId, userId);
 
         const existingWorkspace = await WorkspaceModel.findById(workspaceId);
 
@@ -170,33 +241,112 @@ export const editWorkspace = async (
         }
 
         // Check if the image has changed
+
+        // Handle image field based on the specified cases
         let updatedImage = existingWorkspace.image; // Default to the existing image
+
         if (image instanceof File) {
-            // If the new image is a file, upload it
+            // Case 1: Image field doesn't have value, upload image => add it
+            // Case 3: Image field has value, changes image => add new image and remove old one
             const handleUploadImg = await uploadImage(image);
             updatedImage = handleUploadImg?.data?.url || "";
 
-            const deleteOldImg = await deleteImage(existingWorkspace.image);
-            if (!deleteOldImg.success) {
-                throw new Error("Failed to delete old image!");
+            // If the existing workspace has an image, delete it
+            if (existingWorkspace.image) {
+                const deleteOldImg = await deleteImage({
+                    params: {
+                        public_id: getCloudinaryPublicId(
+                            existingWorkspace.image as string
+                        ),
+                    },
+                });
+                if (!deleteOldImg.success) {
+                    throw new Error("Failed to delete old image!");
+                }
             }
-        } else if (
-            typeof image === "string" &&
-            image !== existingWorkspace.image
-        ) {
-            // If the new image is a string and different from the existing one
-            updatedImage = image;
+        } else if (typeof image === "string") {
+            if (image === "") {
+                // Case 5: Image field has value, remove it => remove old one, update image field to empty string
+                if (existingWorkspace.image) {
+                    const deleteOldImg = await deleteImage({
+                        params: {
+                            public_id: getCloudinaryPublicId(
+                                existingWorkspace.image as string
+                            ),
+                        },
+                    });
+                    if (!deleteOldImg.success) {
+                        throw new Error("Failed to delete old image!");
+                    }
+                }
+                updatedImage = ""; // Set the image field to an empty string
+            } else if (image !== existingWorkspace.image) {
+                // Case 3: Image field has value, changes image => add new image and remove old one
+                updatedImage = image;
+
+                if (existingWorkspace.image) {
+                    const deleteOldImg = await deleteImage(
+                        existingWorkspace.image
+                    );
+                    if (!deleteOldImg.success) {
+                        throw new Error("Failed to delete old image!");
+                    }
+                }
+            }
+            // Case 4: Image field has value, no changes => skip (do nothing)
         }
 
-        // Update the workspace
-        existingWorkspace.name = name;
-        existingWorkspace.image = updatedImage;
+        // Case 2: Image field doesn't have value, no changes => skip (do nothing)
 
-        await existingWorkspace.save();
+        // Update the workspace
+        const editedWorkspace = await WorkspaceModel.findOneAndUpdate(
+            { _id: workspaceId },
+            {
+                name,
+                image: updatedImage,
+            },
+            { session, new: true }
+        );
+
+        // *End transaction
+        await session.commitTransaction();
 
         return {
             success: true,
-            data: JSON.parse(JSON.stringify(existingWorkspace)),
+            data: JSON.parse(JSON.stringify(editedWorkspace)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const deleteWorkspace = async (
+    params: DeleteWorkspaceParams
+): Promise<ActionResponse<Workspace>> => {
+    const validationResult = await action({
+        params,
+        schema: DeleteWorkspaceSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { workspaceId } = validationResult.params!;
+    const userId = validationResult.session?.user.id!;
+
+    try {
+        await checkAdminRole(workspaceId, userId);
+
+        const workspace = await WorkspaceModel.findOneAndDelete({
+            _id: workspaceId,
+            userId,
+        });
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(workspace)),
             status: 200,
         };
     } catch (error) {

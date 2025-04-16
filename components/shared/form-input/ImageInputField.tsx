@@ -77,16 +77,34 @@ const ImageInputField = <S extends FieldValues>({
                                 onChange={handleImageChange}
                                 disabled={form.formState.isSubmitting}
                             />
-                            <Button
-                                variant="teritary"
-                                type="button"
-                                disabled={form.formState.isSubmitting}
-                                size="sm"
-                                className="w-fit mt-2 "
-                                onClick={() => inputRef.current?.click()}
-                            >
-                                Upload Image
-                            </Button>
+                            {field.value ? (
+                                <Button
+                                    variant="destructive"
+                                    type="button"
+                                    disabled={form.formState.isSubmitting}
+                                    size="sm"
+                                    className="w-fit mt-2"
+                                    onClick={() => {
+                                        field.onChange("");
+                                        if (inputRef.current) {
+                                            inputRef.current.value = "";
+                                        }
+                                    }}
+                                >
+                                    Remove Image
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="teritary"
+                                    type="button"
+                                    disabled={form.formState.isSubmitting}
+                                    size="sm"
+                                    className="w-fit mt-2"
+                                    onClick={() => inputRef.current?.click()}
+                                >
+                                    Upload Image
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>

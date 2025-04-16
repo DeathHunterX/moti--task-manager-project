@@ -9,28 +9,31 @@ import InputField from "../../../form-input/InputField";
 import ImageInputField from "../../../form-input/ImageInputField";
 import { CreateWorkspaceSchema } from "@/lib/validation";
 
-import { useCreateWorkspace } from "@/hooks/actions/useWorkspaces";
-import { ErrorToastMsg } from "@/components/shared/Toast";
+import {
+    useCreateWorkspace,
+    useEditWorkspace,
+} from "@/hooks/actions/useWorkspaces";
 
 interface WorkspaceFormProps {
     onCancel?: () => void;
     actionType: "create" | "update";
-    isEdit?: boolean;
+    initialValue?: Workspace;
 }
 
 const WorkspaceForm = ({
     onCancel,
     actionType,
-    isEdit = false,
+    initialValue,
 }: WorkspaceFormProps) => {
     const createWorkspaceMutation = useCreateWorkspace();
+    const editWorkspaceMutation = useEditWorkspace(initialValue?._id as string);
 
     // 1. Define your form.
     const form = useForm<z.infer<typeof CreateWorkspaceSchema>>({
         resolver: zodResolver(CreateWorkspaceSchema),
         defaultValues: {
-            name: "",
-            image: "",
+            name: actionType === "update" ? initialValue?.name || "" : "",
+            image: actionType === "update" ? initialValue?.image || "" : "",
         },
     });
 
@@ -39,33 +42,31 @@ const WorkspaceForm = ({
         onCancel?.();
     };
 
-    const check = () => {
-        const mockErrorData = {
-            title: "Error 400",
-            description: "Something went wrong while creating the workspace!",
-        };
-
-        ErrorToastMsg(mockErrorData);
-    };
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof CreateWorkspaceSchema>) {
-        createWorkspaceMutation.mutate(
-            {
+        if (actionType === "update") {
+            editWorkspaceMutation.mutate({
+                workspaceId: initialValue?._id as string,
                 name: values.name,
                 image: values.image,
-            },
-            {
-                onSuccess: () => {
-                    handleCancelForm();
+            });
+        } else {
+            createWorkspaceMutation.mutate(
+                {
+                    name: values.name,
+                    image: values.image,
                 },
-            }
-        );
+                {
+                    onSuccess: () => {
+                        handleCancelForm();
+                    },
+                }
+            );
+        }
     }
 
     const buttonText =
-        actionType === "create" || !isEdit
-            ? "Create workspace"
-            : "Save changes";
+        actionType === "create" ? "Create workspace" : "Save changes";
     return (
         <Form {...form}>
             <form
@@ -76,9 +77,6 @@ const WorkspaceForm = ({
 
                 <ImageInputField nameInSchema="image" label="Workspace Icon" />
 
-                <Button type="button" onClick={check}>
-                    Check
-                </Button>
                 <div className="flex flex-rows justify-between gap-4">
                     <Button
                         className="px-5 py-3"
@@ -86,13 +84,13 @@ const WorkspaceForm = ({
                         type="button"
                         onClick={handleCancelForm}
                     >
-                        Cancel
+                        Reset
                     </Button>
                     <Button
                         type="submit"
                         className="px-5 py-3 bg-blue-600 hover:bg-blue-700"
                     >
-                        Submit
+                        {buttonText}
                     </Button>
                 </div>
             </form>

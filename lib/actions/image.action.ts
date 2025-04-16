@@ -71,10 +71,9 @@ export const deleteImage = async ({
         await cloudinary.uploader
             .destroy(
                 public_id,
-                { resource_type: "image" },
+
                 async (err, result) => {
                     if (err) throw err;
-                    resolve(result);
                 }
             )
             .then((result) => {

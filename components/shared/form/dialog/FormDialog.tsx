@@ -1,21 +1,6 @@
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-} from "@/components/ui/dialog";
 import FormContainer from "./FormContainer";
 import { useFormModal } from "@/hooks/use-form-modal";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-import {
-    Drawer,
-    DrawerContent,
-    DrawerDescription,
-    DrawerHeader,
-    DrawerTitle,
-} from "@/components/ui/drawer";
+import ResponsiveModal from "../../ResponsiveModal";
 
 const titleDescriptionMap = {
     workspace: {
@@ -52,32 +37,17 @@ const FormModal = () => {
         description: "",
     };
 
-    const isMobile = useIsMobile(1024);
-
-    if (isMobile) {
-        return (
-            <Drawer open={isOpen} onOpenChange={onClose}>
-                <DrawerContent className="px-8">
-                    <DrawerHeader>
-                        <DrawerTitle>{title}</DrawerTitle>
-                        <DrawerDescription>{description}</DrawerDescription>
-                    </DrawerHeader>
-                    <FormContainer onCancel={onClose} />
-                </DrawerContent>
-            </Drawer>
-        );
-    }
-
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="lg:min-w-[40vw] lg:max-w-md">
-                <DialogHeader className="pb-2">
-                    <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>{description}</DialogDescription>
-                </DialogHeader>
+        <ResponsiveModal
+            open={isOpen}
+            onOpenChange={onClose}
+            title={title}
+            description={description}
+        >
+            <div className="pb-2">
                 <FormContainer onCancel={onClose} actionType={actionType} />
-            </DialogContent>
-        </Dialog>
+            </div>
+        </ResponsiveModal>
     );
 };
 
