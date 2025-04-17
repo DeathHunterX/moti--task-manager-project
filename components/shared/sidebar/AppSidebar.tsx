@@ -14,8 +14,8 @@ import {
     SidebarHeader,
 } from "@/components/ui/sidebar";
 
-import { NavMain } from "./NavMain";
 import Image from "next/image";
+import { NavMain } from "./NavMain";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { NavProject } from "./NavProject";
 
@@ -24,7 +24,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
         navMain: [
             {
                 title: "Summary",
-                url: "#",
+                url: "/",
                 icon: AppWindow,
             },
             {
@@ -39,7 +39,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
             },
             {
                 title: "Team",
-                url: "#",
+                url: "/team",
                 icon: UsersIcon,
             },
         ],
@@ -60,7 +60,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
             <SidebarContent className="px-1.5">
                 <WorkspaceSwitcher />
                 <NavMain items={data.navMain} />
-                <NavProject items={data.navMain} />
+                <NavProject />
             </SidebarContent>
         </Sidebar>
     );

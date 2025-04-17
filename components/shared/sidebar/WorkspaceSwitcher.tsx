@@ -84,38 +84,45 @@ export function WorkspaceSwitcher() {
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <SidebarMenuButton
-                            size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-offset-0 focus-visible:ring-0"
-                        >
-                            <div className="flex aspect-square items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                                {(activeTeam.image as string).trim() !== "" ? (
-                                    <div className="size-8 relative">
-                                        <Image
-                                            src={
-                                                typeof activeTeam.image ===
-                                                "string"
-                                                    ? activeTeam.image
-                                                    : URL.createObjectURL(
-                                                          activeTeam.image
-                                                      )
-                                            }
-                                            fill
-                                            alt={`${activeTeam.name} image`}
-                                            className="rounded-md"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="size-8 bg-gradient-to-bl from-violet-500 to-fuchsia-500 rounded-md" />
-                                )}
-                            </div>
-                            <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">
-                                    {activeTeam.name}
-                                </span>
-                            </div>
-                            <ChevronsUpDown className="ml-auto" />
-                        </SidebarMenuButton>
+                        <div className="px-2">
+                            <small className="text-xs text-gray-500 px-2">
+                                Workspace
+                            </small>
+
+                            <SidebarMenuButton
+                                size="lg"
+                                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-offset-0 focus-visible:ring-0"
+                            >
+                                <div className="flex aspect-square items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
+                                    {(activeTeam.image as string).trim() !==
+                                    "" ? (
+                                        <div className="size-8 relative">
+                                            <Image
+                                                src={
+                                                    typeof activeTeam.image ===
+                                                    "string"
+                                                        ? activeTeam.image
+                                                        : URL.createObjectURL(
+                                                              activeTeam.image
+                                                          )
+                                                }
+                                                fill
+                                                alt={`${activeTeam.name} image`}
+                                                className="rounded-md"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="size-8 bg-gradient-to-bl from-violet-500 to-fuchsia-500 rounded-md" />
+                                    )}
+                                </div>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-semibold">
+                                        {activeTeam.name}
+                                    </span>
+                                </div>
+                                <ChevronsUpDown className="ml-auto" />
+                            </SidebarMenuButton>
+                        </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
@@ -127,6 +134,7 @@ export function WorkspaceSwitcher() {
                             Teams
                         </DropdownMenuLabel>
                         {(data ?? []).map((workspace, index) => (
+                            // TODO: Redo this line by using Link
                             <DropdownMenuItem
                                 key={workspace._id}
                                 onClick={() => {

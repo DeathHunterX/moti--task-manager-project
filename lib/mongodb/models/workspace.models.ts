@@ -1,12 +1,15 @@
 import { Schema, Types, model, models } from "mongoose";
 
-const WorkspaceSchema = new Schema({
-    name: { type: String, require: true },
-    image: { type: String },
-    userId: { type: Types.ObjectId },
-    inviteCode: { type: String },
-});
+const WorkspaceSchema = new Schema(
+    {
+        name: { type: String, require: true },
+        image: { type: String },
+        inviteCode: { type: String },
+        userId: { type: Types.ObjectId, require: true, ref: "User" },
+    },
+    { timestamps: true }
+);
 
-const Workspace = models.Workspace || model("Workspace", WorkspaceSchema);
+const WorkspaceModel = models.Workspace || model("Workspace", WorkspaceSchema);
 
-export default Workspace;
+export default WorkspaceModel;

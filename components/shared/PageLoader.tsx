@@ -1,9 +1,15 @@
 import { LoaderIcon } from "lucide-react";
 
-const PageLoader = () => {
+interface PageLoaderProps {
+    className?: string;
+}
+
+const PageLoader = ({ className }: PageLoaderProps) => {
     return (
-        <div className="flex items-center justify-center h-screen">
-            <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
+        <div className="flex items-center justify-center h-[calc(100vh-12vh-54px)]">
+            <LoaderIcon
+                className={`size-6 animate-spin text-muted-foreground ${className}`}
+            />
         </div>
     );
 };

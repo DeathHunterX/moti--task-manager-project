@@ -9,28 +9,29 @@ import InputField from "../../../form-input/InputField";
 import ImageInputField from "../../../form-input/ImageInputField";
 import { CreateWorkspaceSchema } from "@/lib/validation";
 
-import {
-    useCreateWorkspace,
-    useEditWorkspace,
-} from "@/hooks/actions/useWorkspaces";
+import { useCreateProject } from "@/hooks/actions/useProjects";
+import { CreateProjectSchema } from "@/lib/validation/form";
+import { useParams } from "next/navigation";
 
-interface WorkspaceFormProps {
+interface ProjectFormProps {
     onCancel?: () => void;
     actionType: "create" | "update";
-    initialValue?: Workspace;
+    initialValue?: Project;
 }
 
-const WorkspaceForm = ({
+const ProjectForm = ({
     onCancel,
     actionType,
     initialValue,
-}: WorkspaceFormProps) => {
-    const createWorkspaceMutation = useCreateWorkspace();
-    const editWorkspaceMutation = useEditWorkspace(initialValue?._id as string);
+}: ProjectFormProps) => {
+    const { workspaceId } = useParams();
+
+    const createProjectMutation = useCreateProject();
+    // const editWorkspaceMutation = useEditWorkspace(initialValue?._id as string);
 
     // 1. Define your form.
-    const form = useForm<z.infer<typeof CreateWorkspaceSchema>>({
-        resolver: zodResolver(CreateWorkspaceSchema),
+    const form = useForm<z.infer<typeof CreateProjectSchema>>({
+        resolver: zodResolver(CreateProjectSchema),
         defaultValues: {
             name: actionType === "update" ? initialValue?.name || "" : "",
             image: actionType === "update" ? initialValue?.image || "" : "",
@@ -43,16 +44,17 @@ const WorkspaceForm = ({
     };
 
     // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof CreateWorkspaceSchema>) {
+    async function onSubmit(values: z.infer<typeof CreateProjectSchema>) {
         if (actionType === "update") {
-            editWorkspaceMutation.mutate({
-                workspaceId: initialValue?._id as string,
-                name: values.name,
-                image: values.image,
-            });
+            // editWorkspaceMutation.mutate({
+            //     workspaceId: initialValue?._id as string,
+            //     name: values.name,
+            //     image: values.image,
+            // });
         } else {
-            createWorkspaceMutation.mutate(
+            createProjectMutation.mutate(
                 {
+                    workspaceId: workspaceId as string,
                     name: values.name,
                     image: values.image,
                 },
@@ -66,16 +68,16 @@ const WorkspaceForm = ({
     }
 
     const buttonText =
-        actionType === "create" ? "Create workspace" : "Save changes";
+        actionType === "create" ? "Create project" : "Save changes";
     return (
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8 my-5"
             >
-                <InputField nameInSchema="name" label="Workspace Name" />
+                <InputField nameInSchema="name" label="Project Name" />
 
-                <ImageInputField nameInSchema="image" label="Workspace Icon" />
+                <ImageInputField nameInSchema="image" label="Project Icon" />
 
                 <div className="flex flex-rows justify-between gap-4">
                     <Button
@@ -98,4 +100,4 @@ const WorkspaceForm = ({
     );
 };
 
-export default WorkspaceForm;
+export default ProjectForm;

@@ -190,8 +190,6 @@ export const getAllWorkspaces = async (
             ? workspaces.slice(0, pageSize)
             : workspaces;
 
-        console.log(workspaces);
-
         if (!workspaces) {
             throw new Error("Failed to get all workspaces available!");
         }
@@ -349,6 +347,9 @@ export const editWorkspace = async (
         // *End transaction
         await session.commitTransaction();
 
+        revalidatePath("/workspaces");
+        revalidatePath("/workspaces/:id");
+
         return {
             success: true,
             data: JSON.parse(JSON.stringify(editedWorkspace)),
@@ -375,13 +376,33 @@ export const deleteWorkspace = async (
     const { workspaceId } = validationResult.params!;
     const userId = validationResult.session?.user.id!;
 
+    // *Start transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
         await checkAdminRole(workspaceId, userId);
 
-        const workspace = await WorkspaceModel.findOneAndDelete({
-            _id: workspaceId,
-            userId,
-        });
+        const workspace = await WorkspaceModel.findOneAndDelete(
+            {
+                _id: workspaceId,
+                userId,
+            },
+            { session }
+        );
+
+        await MemberModel.findOneAndDelete(
+            {
+                workspaceId: workspaceId,
+            },
+            { session }
+        );
+
+        await session.commitTransaction();
+
+        revalidatePath("/workspaces");
+        revalidatePath("/your-work");
+
         return {
             success: true,
             data: JSON.parse(JSON.stringify(workspace)),
@@ -417,6 +438,8 @@ export const resetInviteCode = async (
                 inviteCode: generateInviteCode(6),
             }
         );
+
+        revalidatePath("/workspaces/:id");
 
         return {
             success: true,
@@ -462,6 +485,9 @@ export const joinWorkspaceByInviteCode = async (
         if (!newMember) {
             throw new InternalServerError("Failed to add a member");
         }
+
+        revalidatePath("/workspaces");
+        revalidatePath("/your-work");
 
         return {
             success: true,

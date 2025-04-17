@@ -235,6 +235,12 @@ export const useJoinWorkspaceByInviteCode = () => {
             queryClient.invalidateQueries({
                 queryKey: ["workspace", { id: workspaceId as string }],
             });
+            queryClient.invalidateQueries({
+                queryKey: [
+                    "check-member",
+                    { workspaceId: workspaceId as string },
+                ],
+            });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");

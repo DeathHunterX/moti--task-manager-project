@@ -13,13 +13,15 @@ const WorkspaceIdJoinClient = () => {
     });
 
     if (isPending) {
-        return <PageLoader />;
+        return <PageLoader className="text-white" />;
     }
-    console.log(data);
+
     return (
         <div>
-            <div className="">
-                {data && <JoinWorkspaceForm initialValues={data} />}
+            <div className="relative min-h-[100vh] w-full bg-gray-200">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-2/3">
+                    {data && <JoinWorkspaceForm initialValues={data} />}
+                </div>
             </div>
         </div>
     );

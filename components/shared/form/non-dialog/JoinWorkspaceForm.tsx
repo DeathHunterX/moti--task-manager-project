@@ -39,7 +39,7 @@ const JoinWorkspaceForm = ({ initialValues }: JoinWorkspaceFormProps) => {
     };
 
     return (
-        <Card className="size-full border-none shadow-none">
+        <Card className="w-[450px] border-none shadow-none">
             <CardHeader className="p-7">
                 <CardTitle className="text-xl font-bold">
                     Join workspace
@@ -49,9 +49,7 @@ const JoinWorkspaceForm = ({ initialValues }: JoinWorkspaceFormProps) => {
                     <strong>{initialValues.name}</strong> workspace.
                 </CardDescription>
             </CardHeader>
-            <div className="px-7">
-                <hr />
-            </div>
+
             <CardContent className="p-7">
                 <div className="flex flex-col lg:flex-row gap-2 items-center justify-between">
                     <Button
@@ -60,16 +58,16 @@ const JoinWorkspaceForm = ({ initialValues }: JoinWorkspaceFormProps) => {
                         type="button"
                         asChild
                         className="w-full lg:w-fit"
-                        // disabled={isPending}
+                        disabled={isPending}
                     >
-                        <Link href="/">Cancel</Link>
+                        <Link href="/your-work">Cancel</Link>
                     </Button>
                     <Button
                         size="lg"
                         type="button"
                         className="w-full lg:w-fit"
                         onClick={onSubmit}
-                        // disabled={isPending}
+                        disabled={isPending}
                     >
                         Join Workspace
                     </Button>

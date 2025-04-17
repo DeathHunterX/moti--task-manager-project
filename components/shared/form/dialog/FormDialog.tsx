@@ -45,7 +45,11 @@ const FormModal = () => {
             description={description}
         >
             <div className="pb-2">
-                <FormContainer onCancel={onClose} actionType={actionType} />
+                <FormContainer
+                    formType={formType}
+                    onCancel={onClose}
+                    actionType={actionType}
+                />
             </div>
         </ResponsiveModal>
     );

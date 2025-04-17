@@ -2,12 +2,15 @@ import { Schema, models, model, Types } from "mongoose";
 
 const roleEnum = ["ADMIN", "MEMBER"];
 
-const MemberSchema = new Schema({
-    userId: { type: Types.ObjectId, require: true },
-    workspaceId: { type: Types.ObjectId, require: true },
-    role: { type: String, enum: roleEnum },
-});
+const MemberSchema = new Schema(
+    {
+        userId: { type: Types.ObjectId, require: true, ref: "User" },
+        workspaceId: { type: Types.ObjectId, require: true, ref: "Workspace" },
+        role: { type: String, enum: roleEnum },
+    },
+    { timestamps: true }
+);
 
-const Member = models.Member || model("Member", MemberSchema);
+const MemberModel = models.Member || model("Member", MemberSchema);
 
-export default Member;
+export default MemberModel;

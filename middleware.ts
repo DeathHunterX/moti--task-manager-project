@@ -61,6 +61,16 @@ export default auth((req: any) => {
 
     /**
      * Case:
+     *    - User is logged in.
+     *    - User is on a public page.
+     *    - Redirect the user to the private root page (e.g., dashboard).
+     */
+    if (isLoggedIn && isPublicRoute) {
+        return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+
+    /**
+     * Case:
      *    - User is not logged in.
      *    - User is trying to access a non-public route.
      *    - Redirect the user to the sign-in page.

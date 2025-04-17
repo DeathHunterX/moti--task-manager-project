@@ -15,12 +15,12 @@ const accountSchema = new Schema(
             enum: ["oauth", "oidc", "email", "webauthn"],
             require: true,
         },
-        userId: { type: Types.ObjectId },
+        userId: { type: Types.ObjectId, require: true, ref: "User" },
         password: { type: String },
     },
     { timestamps: true }
 );
 
-const accountModel = models.Account || model("Account", accountSchema);
+const AccountModel = models.Account || model("Account", accountSchema);
 
-export default accountModel;
+export default AccountModel;
