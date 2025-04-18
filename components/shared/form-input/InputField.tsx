@@ -43,7 +43,7 @@ const InputField = <S extends FieldValues>({
                         <Input
                             id={nameInSchema as string}
                             type={type}
-                            className={`paragraph-regular no-focus min-h-12 rounded-md border ${className}`}
+                            className={` rounded-md border ${className}`}
                             placeholder={
                                 placeholder ?? `Enter ${field.name}...`
                             }

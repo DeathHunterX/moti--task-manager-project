@@ -11,7 +11,7 @@ import {
 import MemberModel from "../mongodb/models/member.model";
 import { NotFoundError } from "../http-error";
 import mongoose from "mongoose";
-import { checkAdminRole } from "./workspace.action";
+import { checkAdminRole } from "./queries.action";
 
 export const getWorkspaceMembers = async (
     params: GetWorkspaceMembersParams

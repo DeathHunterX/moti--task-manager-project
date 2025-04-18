@@ -85,7 +85,7 @@ export function WorkspaceSwitcher() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <div className="px-2">
-                            <small className="text-xs text-gray-500 px-2">
+                            <small className="text-xs text-gray-500 px-2 group-data-[collapsible=icon]:hidden">
                                 Workspace
                             </small>
 

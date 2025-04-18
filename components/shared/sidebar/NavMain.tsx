@@ -41,7 +41,7 @@ export function NavMain({
     const { workspaceId } = useParams();
 
     return (
-        <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+        <SidebarGroup>
             <SidebarGroupLabel asChild>Overview</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => {

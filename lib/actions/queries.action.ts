@@ -27,3 +27,35 @@ export const getAccountById = async (id: string) => {
     const account = await AccountModel.findOne({ userId: id });
     return account;
 };
+
+/**
+ * Checks if the user has an admin role for the specified workspace.
+ * @param workspaceId - The ID of the workspace.
+ * @param userId - The ID of the user.
+ * @throws UnauthorizedError if the user is not an admin.
+ */
+export const checkAdminRole = async (
+    workspaceId: string,
+    userId: string
+): Promise<void> => {
+    const member = await MemberModel.findOne({ workspaceId, userId });
+
+    if (!member || member.role !== "ADMIN") {
+        throw new UnauthorizedError(
+            "Unauthorized! You don't have permission to access this workspace!"
+        );
+    }
+};
+
+export const checkMembers = async (
+    workspaceId: string,
+    userId: string
+): Promise<void> => {
+    const member = await MemberModel.findOne({ workspaceId, userId });
+
+    if (!member) {
+        throw new UnauthorizedError(
+            "Unauthorized! You don't have permission to access this workspace!"
+        );
+    }
+};

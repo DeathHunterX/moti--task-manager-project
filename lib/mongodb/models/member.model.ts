@@ -4,8 +4,8 @@ const roleEnum = ["ADMIN", "MEMBER"];
 
 const MemberSchema = new Schema(
     {
-        userId: { type: Types.ObjectId, require: true, ref: "User" },
-        workspaceId: { type: Types.ObjectId, require: true, ref: "Workspace" },
+        userId: { type: Types.ObjectId, required: true, ref: "User" },
+        workspaceId: { type: Types.ObjectId, required: true, ref: "Workspace" },
         role: { type: String, enum: roleEnum },
     },
     { timestamps: true }

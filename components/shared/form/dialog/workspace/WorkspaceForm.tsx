@@ -58,7 +58,7 @@ const WorkspaceForm = ({
                 },
                 {
                     onSuccess: () => {
-                        handleCancelForm();
+                        onCancel?.();
                     },
                 }
             );

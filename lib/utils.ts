@@ -41,3 +41,11 @@ export function generateInviteCode(length: number) {
 
     return result;
 }
+
+export const getCloudinaryPublicId = (url: string) =>
+    url
+        .split("/upload/")[1]
+        .split("/")
+        .slice(1)
+        .join("/")
+        .replace(/\.[^/.]+$/, "");

@@ -12,7 +12,7 @@ export const useGetWorkspaceMembers = (
     workspaceId: string,
     options?: { enabled?: boolean }
 ) => {
-    const query = useQuery({
+    const query = useQuery<unknown, Error, Member[]>({
         queryKey: ["members", { workspaceId }],
         enabled: options?.enabled ?? !!workspaceId,
         queryFn: async () => {

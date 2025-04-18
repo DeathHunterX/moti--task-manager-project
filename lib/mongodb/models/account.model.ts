@@ -15,7 +15,7 @@ const accountSchema = new Schema(
             enum: ["oauth", "oidc", "email", "webauthn"],
             require: true,
         },
-        userId: { type: Types.ObjectId, require: true, ref: "User" },
+        userId: { type: Types.ObjectId, required: true, ref: "User" },
         password: { type: String },
     },
     { timestamps: true }

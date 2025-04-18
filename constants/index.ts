@@ -86,3 +86,11 @@ export const publicNavBarMap = [
         items: [],
     },
 ];
+
+export const statusEnum = [
+    "BACKLOG",
+    "TODO",
+    "IN_PROGRESS",
+    "IN_REVIEW",
+    "DONE",
+];

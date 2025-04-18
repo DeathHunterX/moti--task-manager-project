@@ -25,36 +25,10 @@ import {
     UnauthorizedError,
 } from "../http-error";
 
-import { generateInviteCode } from "../utils";
+import { generateInviteCode, getCloudinaryPublicId } from "../utils";
 import { revalidatePath } from "next/cache";
 import { deleteImage, uploadImage } from "./image.action";
-
-const getCloudinaryPublicId = (url: string) =>
-    url
-        .split("/upload/")[1]
-        .split("/")
-        .slice(1)
-        .join("/")
-        .replace(/\.[^/.]+$/, "");
-
-/**
- * Checks if the user has an admin role for the specified workspace.
- * @param workspaceId - The ID of the workspace.
- * @param userId - The ID of the user.
- * @throws UnauthorizedError if the user is not an admin.
- */
-export const checkAdminRole = async (
-    workspaceId: string,
-    userId: string
-): Promise<void> => {
-    const member = await MemberModel.findOne({ workspaceId, userId });
-
-    if (!member || member.role !== "ADMIN") {
-        throw new UnauthorizedError(
-            "Unauthorized! You don't have permission to access this workspace!"
-        );
-    }
-};
+import { checkAdminRole } from "./queries.action";
 
 export const createWorkspace = async (
     params: CreateWorkspaceParams

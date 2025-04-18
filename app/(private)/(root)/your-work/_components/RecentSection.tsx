@@ -26,7 +26,7 @@ const RecentSection = ({
             {data.length > 0 ? (
                 <div className="grid grid-cols-6 gap-3">
                     {data.map((card) => (
-                        <div className="grid-cols-6">
+                        <div className="grid-cols-6" key={card._id}>
                             <div className="border rounded-md p-3">
                                 <Link
                                     href={`workspaces/${card._id}`}

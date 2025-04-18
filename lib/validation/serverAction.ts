@@ -66,3 +66,42 @@ export const CreateProjectServerSchema = GetAllProjectsSchema.extend({
         ])
         .optional(),
 });
+
+export const EditProjectByIdSchema = CreateProjectServerSchema.extend({
+    projectId: z.string().min(1, { message: "Project Id is required!" }),
+});
+
+export const DeleteProjectByIdSchema = GetAllProjectsSchema.extend({
+    projectId: z.string().min(1, { message: "Project Id is required!" }),
+});
+
+/*
+ *  Tasks
+ */
+
+export enum TaskStatus {
+    BACKLOG = "BACKLOG",
+    TODO = "TODO",
+    IN_PROGRESS = "IN_PROGRESS",
+    IN_REVIEW = "IN_REVIEW",
+    DONE = "DONE",
+}
+
+export const CreateTaskSchema = z.object({
+    name: z.string().trim().min(1, "Name is required!"),
+    status: z.nativeEnum(TaskStatus, { message: "You need to choose status!" }),
+    workspaceId: z.string().trim().min(1, "Workspace Id is required!"),
+    projectId: z.string().trim().min(1, "Project Id is required!"),
+    dueDate: z.coerce.date(),
+    assigneeId: z.string().trim().min(1, "Assignee Id is required"),
+    description: z.string().optional(),
+});
+
+export const GetTasksSchema = z.object({
+    workspaceId: z.string(),
+    projectId: z.string(),
+    assigneeId: z.string(),
+    status: z.nativeEnum(TaskStatus).nullish(),
+    search: z.string().nullish(),
+    dueDate: z.string().nullish(),
+});

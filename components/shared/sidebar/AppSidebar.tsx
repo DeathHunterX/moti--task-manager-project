@@ -57,7 +57,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                     className="block md:hidden"
                 />
             </SidebarHeader>
-            <SidebarContent className="px-1.5">
+            <SidebarContent>
                 <WorkspaceSwitcher />
                 <NavMain items={data.navMain} />
                 <NavProject />

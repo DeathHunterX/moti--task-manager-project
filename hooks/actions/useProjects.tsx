@@ -1,6 +1,7 @@
 import { ErrorToastMsg } from "@/components/shared/Toast";
 import {
     createProject,
+    editProject,
     getAllProjects,
     getProjectById,
 } from "@/lib/actions/project.action";
@@ -34,14 +35,14 @@ export const useGetProjects = (workspaceId: string) => {
 };
 
 export const useGetProjectById = (
-    { projectId }: { projectId: string },
+    projectId: string,
     options?: { enabled?: boolean }
 ) => {
     const { workspaceId: rawWorkspaceId } = useParams();
     const workspaceId = rawWorkspaceId as string;
 
     const query = useQuery({
-        queryKey: ["project", { projectId }],
+        queryKey: ["projects", { projectId }],
         enabled: options?.enabled ?? (!!workspaceId && !!projectId),
         queryFn: async () => {
             if (!workspaceId) {
@@ -93,6 +94,44 @@ export const useCreateProject = () => {
                 description:
                     errorMessage ||
                     "Something went wrong while creating project!",
+            });
+        },
+    });
+    return mutation;
+};
+
+export const useEditProject = (projectId: string) => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: async (data: EditProjectParams) => {
+            const response = await editProject(data);
+
+            if (!response.success) {
+                // Throw an error if the response indicates failure
+                const status = response?.status ?? 500;
+                const message =
+                    response?.error?.message || "Something went wrong";
+                throw new Error(`${status}: ${message}`);
+            }
+
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success("Successfully edit project!");
+
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+            queryClient.invalidateQueries({
+                queryKey: ["projects", { projectId }],
+            });
+        },
+        onError: (error: any) => {
+            const [status, errorMessage] = error.message.split(":");
+            ErrorToastMsg({
+                title: `Error ${status}`,
+                description:
+                    errorMessage ||
+                    "Something went wrong while editing project!",
             });
         },
     });

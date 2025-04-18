@@ -1,7 +1,7 @@
-import React from "react";
+import ProjectIdClient from "./client";
 
 const ProjectPage = () => {
-    return <div>ProjectPage</div>;
+    return <ProjectIdClient />;
 };
 
 export default ProjectPage;

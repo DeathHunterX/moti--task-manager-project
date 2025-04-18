@@ -66,3 +66,35 @@ interface CreateProjectParams extends GetAllProjectsParams {
     name: string;
     image?: File | string;
 }
+
+interface EditProjectParams extends GetProjectByIdParams {
+    name: string;
+    image?: File | string;
+}
+
+interface DeleteProjectParams extends GetAllProjectsParams {
+    projectId: string;
+}
+
+/*
+ *  Tasks
+ */
+
+interface CreateTaskParams {
+    workspaceId: string;
+    name: string;
+    projectId: string;
+    assigneeId: string;
+    description?: string;
+    dueDate: Date;
+    status: TaskStatus;
+}
+
+interface GetTasksParams {
+    workspaceId: string;
+    projectId: string;
+    assigneeId: string;
+    status?: TaskStatus | null;
+    search?: string | null;
+    dueDate?: string | null;
+}

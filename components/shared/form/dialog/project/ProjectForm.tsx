@@ -7,11 +7,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../../../form-input/InputField";
 import ImageInputField from "../../../form-input/ImageInputField";
-import { CreateWorkspaceSchema } from "@/lib/validation";
 
-import { useCreateProject } from "@/hooks/actions/useProjects";
+import { useCreateProject, useEditProject } from "@/hooks/actions/useProjects";
 import { CreateProjectSchema } from "@/lib/validation/form";
-import { useParams } from "next/navigation";
+import { useProjectId, useWorkspaceId } from "@/hooks/use-params";
 
 interface ProjectFormProps {
     onCancel?: () => void;
@@ -24,10 +23,11 @@ const ProjectForm = ({
     actionType,
     initialValue,
 }: ProjectFormProps) => {
-    const { workspaceId } = useParams();
+    const projectId = useProjectId();
+    const workspaceId = useWorkspaceId();
 
     const createProjectMutation = useCreateProject();
-    // const editWorkspaceMutation = useEditWorkspace(initialValue?._id as string);
+    const editProjectMutation = useEditProject(projectId);
 
     // 1. Define your form.
     const form = useForm<z.infer<typeof CreateProjectSchema>>({
@@ -46,21 +46,29 @@ const ProjectForm = ({
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof CreateProjectSchema>) {
         if (actionType === "update") {
-            // editWorkspaceMutation.mutate({
-            //     workspaceId: initialValue?._id as string,
-            //     name: values.name,
-            //     image: values.image,
-            // });
-        } else {
-            createProjectMutation.mutate(
+            editProjectMutation.mutate(
                 {
-                    workspaceId: workspaceId as string,
+                    workspaceId: initialValue?.workspaceId as string,
+                    projectId: initialValue?._id as string,
                     name: values.name,
                     image: values.image,
                 },
                 {
                     onSuccess: () => {
-                        handleCancelForm();
+                        onCancel?.();
+                    },
+                }
+            );
+        } else {
+            createProjectMutation.mutate(
+                {
+                    workspaceId: workspaceId as string,
+                    name: values.name,
+                    image: values.image ?? "",
+                },
+                {
+                    onSuccess: () => {
+                        onCancel?.();
                     },
                 }
             );
@@ -86,7 +94,7 @@ const ProjectForm = ({
                         type="button"
                         onClick={handleCancelForm}
                     >
-                        {actionType === "create" ? "Cancel" : "Reset"}
+                        Cancel
                     </Button>
                     <Button
                         type="submit"
