@@ -15,13 +15,13 @@ import { useProjectId, useWorkspaceId } from "@/hooks/use-params";
 interface ProjectFormProps {
     onCancel?: () => void;
     actionType: "create" | "update";
-    initialValue?: Project;
+    initialData?: Project;
 }
 
 const ProjectForm = ({
     onCancel,
     actionType,
-    initialValue,
+    initialData,
 }: ProjectFormProps) => {
     const projectId = useProjectId();
     const workspaceId = useWorkspaceId();
@@ -33,8 +33,8 @@ const ProjectForm = ({
     const form = useForm<z.infer<typeof CreateProjectSchema>>({
         resolver: zodResolver(CreateProjectSchema),
         defaultValues: {
-            name: actionType === "update" ? initialValue?.name || "" : "",
-            image: actionType === "update" ? initialValue?.image || "" : "",
+            name: actionType === "update" ? initialData?.name || "" : "",
+            image: actionType === "update" ? initialData?.image || "" : "",
         },
     });
 
@@ -48,8 +48,8 @@ const ProjectForm = ({
         if (actionType === "update") {
             editProjectMutation.mutate(
                 {
-                    workspaceId: initialValue?.workspaceId as string,
-                    projectId: initialValue?._id as string,
+                    workspaceId: initialData?.workspaceId as string,
+                    projectId: initialData?._id as string,
                     name: values.name,
                     image: values.image,
                 },

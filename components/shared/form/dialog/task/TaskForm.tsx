@@ -1,34 +1,32 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import InputField from "../../../form-input/InputField";
+import DatePickerField from "@/components/shared/form-input/DatePickerField";
+import SelectInputField from "@/components/shared/form-input/SelectInputField";
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import InputField from "../../../form-input/InputField";
-import ImageInputField from "../../../form-input/ImageInputField";
-
-import {
-    useCreateProject,
-    useEditProject,
-    useGetProjects,
-} from "@/hooks/actions/useProjects";
-import { CreateProjectSchema } from "@/lib/validation/form";
-import { useProjectId, useWorkspaceId } from "@/hooks/use-params";
-import DatePickerField from "@/components/shared/form-input/DatePickerField";
-import SelectInputField from "@/components/shared/form-input/SelectInputField";
+import { useGetProjects } from "@/hooks/actions/useProjects";
 import { useGetWorkspaceMembers } from "@/hooks/actions/useMembers";
-import { useCreateTask } from "@/hooks/actions/useTask";
-import { CreateTaskSchema } from "@/lib/validation/serverAction";
+import { useCreateTask, useEditTask } from "@/hooks/actions/useTask";
+
+import { useWorkspaceId } from "@/hooks/use-params";
+import {
+    CreateTaskSchema,
+    TaskStatusEnum,
+} from "@/lib/validation/serverAction";
+import { statusOptions } from "@/constants";
 
 interface ProjectFormProps {
     onCancel?: () => void;
     actionType: "create" | "update";
-    data?: Task;
+    initialData?: Task;
 }
 
-const TaskForm = ({ onCancel, actionType, data }: ProjectFormProps) => {
+const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
     const workspaceId = useWorkspaceId();
 
     const { data: members, isLoading: isLoadingMembers } =
@@ -50,16 +48,33 @@ const TaskForm = ({ onCancel, actionType, data }: ProjectFormProps) => {
     const { mutate: createTaskMutation, isPending: isCreatePending } =
         useCreateTask();
 
+    const { mutate: editTaskMutation, isPending: isEditPending } = useEditTask(
+        initialData?._id || ""
+    );
+
+    const isSubmittedPending = isCreatePending || isEditPending;
+
     // 1. Define your form.
     const form = useForm<z.infer<typeof CreateTaskSchema>>({
         resolver: zodResolver(CreateTaskSchema),
         defaultValues: {
-            name: actionType === "update" ? data?.name || "" : "",
-            status: undefined,
-            workspaceId: workspaceId,
-            projectId: "",
-            dueDate: undefined,
-            assigneeId: "",
+            name: actionType === "update" ? initialData?.name || "" : "",
+            status:
+                actionType === "update"
+                    ? (initialData?.status as TaskStatusEnum) || undefined
+                    : undefined,
+            workspaceId:
+                actionType === "update"
+                    ? initialData?.workspaceId || workspaceId
+                    : workspaceId,
+            projectId:
+                actionType === "update" ? initialData?.projectId || "" : "",
+            dueDate:
+                actionType === "update"
+                    ? initialData?.dueDate || undefined
+                    : undefined,
+            assigneeId:
+                actionType === "update" ? initialData?.assigneeId || "" : "",
         },
     });
 
@@ -73,19 +88,22 @@ const TaskForm = ({ onCancel, actionType, data }: ProjectFormProps) => {
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof CreateTaskSchema>) {
         if (actionType === "update") {
-            // editProjectMutation.mutate(
-            //     {
-            //         workspaceId: initialValue?.workspaceId as string,
-            //         projectId: initialValue?._id as string,
-            //         name: values.name,
-            //         image: values.image,
-            //     },
-            //     {
-            //         onSuccess: () => {
-            //             onCancel?.();
-            //         },
-            //     }
-            // );
+            editTaskMutation(
+                {
+                    taskId: initialData?._id as string,
+                    name: values.name,
+                    status: values.status,
+                    workspaceId: workspaceId,
+                    projectId: values.projectId,
+                    dueDate: values.dueDate,
+                    assigneeId: values.assigneeId,
+                },
+                {
+                    onSuccess: () => {
+                        onCancel?.();
+                    },
+                }
+            );
         } else {
             createTaskMutation(
                 {
@@ -127,13 +145,7 @@ const TaskForm = ({ onCancel, actionType, data }: ProjectFormProps) => {
                     label="Status"
                     placeholder="Select status"
                     isLoading={isLoadingMembers}
-                    data={[
-                        { name: "Backlog", value: "BACKLOG" },
-                        { name: "To Do", value: "TODO" },
-                        { name: "In Progress", value: "IN_PROGRESS" },
-                        { name: "In Review", value: "IN_REVIEW" },
-                        { name: "Done", value: "DONE" },
-                    ]}
+                    data={statusOptions}
                 />
 
                 <SelectInputField
@@ -157,6 +169,7 @@ const TaskForm = ({ onCancel, actionType, data }: ProjectFormProps) => {
                     <Button
                         type="submit"
                         className="px-5 py-3 bg-blue-600 hover:bg-blue-700"
+                        disabled={isSubmittedPending}
                     >
                         {buttonText}
                     </Button>

@@ -54,10 +54,10 @@ const WorkspaceTeamClient = () => {
     return (
         <>
             <RemoveDialog />
-            <Table>
+            <Table className="">
                 {(data || []).length === 0 && (
                     <TableCaption>
-                        <div className="flex flex-col items-center w-full">
+                        <div className="flex flex-col items-center ">
                             <Image
                                 src="/data-not-found.png"
                                 width={300}

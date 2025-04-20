@@ -49,3 +49,10 @@ export const getCloudinaryPublicId = (url: string) =>
         .slice(1)
         .join("/")
         .replace(/\.[^/.]+$/, "");
+
+export function snakeCaseToTitleCase(str: string) {
+    return str
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+}

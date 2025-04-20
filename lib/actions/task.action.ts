@@ -3,10 +3,16 @@
 import { ActionResponse, ErrorResponse } from "@/types/server";
 import handleError from "../handlers/error";
 import action from "../handlers/action";
-import { CreateTaskSchema, GetTasksSchema } from "../validation/serverAction";
+import {
+    CreateTaskSchema,
+    DeleteTaskSchema,
+    EditTaskSchema,
+    GetTaskByIdSchema,
+    GetTasksSchema,
+} from "../validation/serverAction";
 import TaskModel from "../mongodb/models/task.model";
 import { checkMembers } from "./queries.action";
-import { BadRequestError } from "../http-error";
+import { BadRequestError, NotFoundError } from "../http-error";
 import ProjectModel from "../mongodb/models/project.model";
 import MemberModel from "../mongodb/models/member.model";
 import UserModel from "../mongodb/models/user.model";
@@ -144,6 +150,135 @@ export const getTasks = async (
             success: true,
             data: JSON.parse(JSON.stringify(populatedTasks)),
             status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const getTaskById = async (
+    params: GetTaskByIdParams
+): Promise<ActionResponse<Task>> => {
+    const validationResult = await action({
+        params,
+        schema: GetTaskByIdSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { taskId } = validationResult.params!;
+
+    try {
+        const task = await TaskModel.findOne({
+            _id: taskId,
+        });
+
+        if (!task) {
+            throw new NotFoundError("Failed to get task!");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(task)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const editTask = async (
+    params: EditTaskParams
+): Promise<ActionResponse<Task>> => {
+    const validationResult = await action({
+        params,
+        schema: EditTaskSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const {
+        taskId,
+        workspaceId,
+        name,
+        projectId,
+        assigneeId,
+        description,
+        dueDate,
+        status,
+    } = validationResult.params!;
+
+    const userId = validationResult.session?.user.id!;
+
+    try {
+        await checkMembers(workspaceId, userId);
+
+        const task = await TaskModel.findOneAndUpdate(
+            { _id: taskId, workspaceId: workspaceId },
+            {
+                workspaceId,
+                name,
+                projectId,
+                assigneeId,
+                description,
+                dueDate,
+                status,
+            }
+        );
+
+        if (!task) {
+            throw new NotFoundError("Failed to edit a task!");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(task)),
+            status: 201,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const deleteTask = async (
+    params: DeleteTaskParams
+): Promise<ActionResponse<Task>> => {
+    const validationResult = await action({
+        params,
+        schema: DeleteTaskSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { taskId, workspaceId } = validationResult.params!;
+
+    const userId = validationResult.session?.user.id!;
+
+    try {
+        await checkMembers(workspaceId, userId);
+
+        const task = await TaskModel.findOneAndDelete({
+            _id: taskId,
+            workspaceId: workspaceId,
+        });
+
+        if (!task) {
+            throw new NotFoundError("Failed to remove a task!");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(task)),
+            status: 201,
         };
     } catch (error) {
         return handleError(error) as ErrorResponse;

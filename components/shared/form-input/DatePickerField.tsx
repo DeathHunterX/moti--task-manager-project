@@ -44,7 +44,7 @@ const DatePickerField = <S extends FieldValues>({
                     <FormLabel className="paragraph-small flex items-start">
                         {label}
                     </FormLabel>
-                    <Popover modal={true}>
+                    <Popover modal>
                         <PopoverTrigger asChild>
                             <FormControl>
                                 <Button

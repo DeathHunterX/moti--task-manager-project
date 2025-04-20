@@ -17,7 +17,6 @@ import {
 import { useFormContext, FieldValues, Path } from "react-hook-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ImageIcon } from "lucide-react";
 
 type SelectInputFieldProps<S extends FieldValues> = {
     nameInSchema: keyof S;

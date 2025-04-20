@@ -94,3 +94,11 @@ export const statusEnum = [
     "IN_REVIEW",
     "DONE",
 ];
+
+export const statusOptions = statusEnum.map((status) => ({
+    name: status
+        .replace(/_/g, " ") // Replace underscores with spaces
+        .toLowerCase() // Convert to lowercase
+        .replace(/(?:^|\s)\S/g, (match) => match.toUpperCase()), // Capitalize first letter of each word
+    value: status,
+}));

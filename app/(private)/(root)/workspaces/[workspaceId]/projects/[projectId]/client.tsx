@@ -30,7 +30,7 @@ const ProjectIdClient = () => {
         setFormType("project");
         setActionType("update");
 
-        onOpen(projectData);
+        onOpen(projectId);
     };
     return (
         <div className="flex flex-col gap-y-4">

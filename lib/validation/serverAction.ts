@@ -79,7 +79,7 @@ export const DeleteProjectByIdSchema = GetAllProjectsSchema.extend({
  *  Tasks
  */
 
-export enum TaskStatus {
+export enum TaskStatusEnum {
     BACKLOG = "BACKLOG",
     TODO = "TODO",
     IN_PROGRESS = "IN_PROGRESS",
@@ -89,7 +89,9 @@ export enum TaskStatus {
 
 export const CreateTaskSchema = z.object({
     name: z.string().trim().min(1, "Name is required!"),
-    status: z.nativeEnum(TaskStatus, { message: "You need to choose status!" }),
+    status: z.nativeEnum(TaskStatusEnum, {
+        message: "You need to choose status!",
+    }),
     workspaceId: z.string().trim().min(1, "Workspace Id is required!"),
     projectId: z.string().trim().min(1, "Project Id is required!"),
     dueDate: z.coerce.date(),
@@ -99,9 +101,22 @@ export const CreateTaskSchema = z.object({
 
 export const GetTasksSchema = z.object({
     workspaceId: z.string(),
-    projectId: z.string(),
-    assigneeId: z.string(),
-    status: z.nativeEnum(TaskStatus).nullish(),
+    projectId: z.string().nullish(),
+    assigneeId: z.string().nullish(),
+    status: z.nativeEnum(TaskStatusEnum).nullish(),
     search: z.string().nullish(),
     dueDate: z.string().nullish(),
+});
+
+export const GetTaskByIdSchema = z.object({
+    taskId: z.string(),
+});
+
+export const EditTaskSchema = CreateTaskSchema.extend({
+    taskId: z.string(),
+});
+
+export const DeleteTaskSchema = z.object({
+    taskId: z.string(),
+    workspaceId: z.string(),
 });

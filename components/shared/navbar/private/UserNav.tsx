@@ -13,9 +13,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AUTH_ROUTES_DICT } from "@/constants/routes";
-import { ChevronRight, Link, LogOut } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { Icons } from "react-toastify";
 
 const UserNav = () => {
     const { data: session } = useSession();

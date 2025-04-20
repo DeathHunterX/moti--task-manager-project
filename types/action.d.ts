@@ -1,4 +1,6 @@
-// User
+/*
+ *  User
+ */
 interface GetUserAccountParams {
     userId: string;
 }
@@ -92,9 +94,22 @@ interface CreateTaskParams {
 
 interface GetTasksParams {
     workspaceId: string;
-    projectId: string;
-    assigneeId: string;
+    projectId?: string | null;
+    assigneeId?: string | null;
     status?: TaskStatus | null;
     search?: string | null;
     dueDate?: string | null;
+}
+
+interface GetTaskByIdParams {
+    taskId: string;
+}
+
+interface EditTaskParams extends CreateTaskParams {
+    taskId: string;
+}
+
+interface DeleteTaskParams {
+    taskId: string;
+    workspaceId: string;
 }

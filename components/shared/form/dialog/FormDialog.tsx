@@ -1,5 +1,5 @@
 import FormContainer from "./FormContainer";
-import { ModalFormDataType, useFormModal } from "@/hooks/use-form-modal";
+import { useFormModal } from "@/hooks/use-form-modal";
 import ResponsiveModal from "../../ResponsiveModal";
 
 const titleDescriptionMap = {
@@ -39,7 +39,7 @@ const titleDescriptionMap = {
 };
 
 const FormModal = () => {
-    const { isOpen, onClose, formType, actionType, data } = useFormModal();
+    const { isOpen, onClose, formType, actionType, id } = useFormModal();
 
     const { title, description } = titleDescriptionMap[formType]?.[
         actionType
@@ -60,7 +60,7 @@ const FormModal = () => {
                     formType={formType}
                     onCancel={onClose}
                     actionType={actionType}
-                    data={data || ({} as ModalFormDataType)}
+                    id={id || ""}
                 />
             </div>
         </ResponsiveModal>

@@ -10,7 +10,7 @@ interface ProjectAvatarProps {
     fallbackClassName?: string;
 }
 
-const ProjectAvatar = ({ image, name, className }: ProjectAvatarProps) => {
+const ProjectAvatar = ({ image = "", name, className }: ProjectAvatarProps) => {
     return (
         <div
             className={cn(

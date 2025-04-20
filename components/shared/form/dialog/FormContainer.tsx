@@ -1,15 +1,18 @@
 "use client";
+import { JSX } from "react";
 import WorkspaceForm from "./workspace/WorkspaceForm";
 import ProjectForm from "./project/ProjectForm";
-import { ModalFormDataType, ModalFormType } from "@/hooks/use-form-modal";
-import { JSX } from "react";
 import TaskForm from "./task/TaskForm";
+
+import { ModalFormType } from "@/hooks/use-form-modal";
+import { useGetProjectById } from "@/hooks/actions/useProjects";
+import { useGetTaskById } from "@/hooks/actions/useTask";
 
 interface FormContainerProps {
     formType: ModalFormType;
     onCancel?: () => void;
     actionType: "create" | "update";
-    data: ModalFormDataType;
+    id: string;
 }
 
 const forms: Record<
@@ -17,25 +20,29 @@ const forms: Record<
     (
         onCancel: () => void,
         actionType: "create" | "update",
-        data: ModalFormDataType
+        id: string
     ) => JSX.Element
 > = {
     workspace: (onCancel, actionType) => (
         <WorkspaceForm onCancel={onCancel} actionType={actionType} />
     ),
-    project: (onCancel, actionType, data) => (
-        <ProjectForm
-            onCancel={onCancel}
-            actionType={actionType}
-            initialValue={data as Project}
-        />
-    ),
-    task: (onCancel, actionType, data) => {
+    project: (onCancel, actionType, id) => {
+        const { data: projectData } = useGetProjectById(id, { enabled: !!id });
+        return (
+            <ProjectForm
+                onCancel={onCancel}
+                actionType={actionType}
+                initialData={projectData as Project}
+            />
+        );
+    },
+    task: (onCancel, actionType, id) => {
+        const { data: taskData } = useGetTaskById(id, { enabled: !!id });
         return (
             <TaskForm
                 onCancel={onCancel}
                 actionType={actionType}
-                data={data as Task}
+                initialData={taskData as Task}
             />
         );
     },
@@ -45,12 +52,12 @@ const FormContainer = ({
     formType,
     onCancel,
     actionType,
-    data,
+    id,
 }: FormContainerProps) => {
     const Form = () => {
         const handleCancel = onCancel || (() => {});
         return actionType === "create" || actionType === "update"
-            ? forms[formType](handleCancel, actionType, data)
+            ? forms[formType](handleCancel, actionType, id)
             : "Form not found!";
     };
     return <Form />;

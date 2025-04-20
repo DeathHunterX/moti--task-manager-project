@@ -25,10 +25,13 @@ interface Project {
 }
 
 interface Task {
+    _id: string;
     workspaceId: string;
     name: string;
     projectId: string;
+    project?: Project;
     assigneeId: string;
+    assignee?: User;
     description: string;
     dueDate: Date;
     status: TaskStatus;

@@ -6,11 +6,11 @@ export type ModalFormDataType = Workspace | Project | Task;
 type FormModalState = {
     // Dialog state management
     isOpen: boolean;
-    onOpen: (data?: ModalFormDataType) => void;
+    onOpen: (id?: string) => void;
     onClose: () => void;
 
     // Form state management
-    data?: ModalFormDataType;
+    id?: string;
     formType: ModalFormType;
     actionType: "create" | "update";
     setFormType: (formType: ModalFormType) => void;
@@ -18,16 +18,16 @@ type FormModalState = {
 };
 
 export const useFormModal = create<FormModalState>((set, get) => ({
-    data: undefined,
+    id: undefined,
     isOpen: false,
     formType: "workspace",
     actionType: "create",
-    onOpen: (data?: ModalFormDataType) => {
+    onOpen: (id?: string) => {
         const { actionType } = get();
         if (actionType === "create") {
-            set({ isOpen: true, data: undefined });
-        } else if (actionType === "update" && data) {
-            set({ isOpen: true, data: data as unknown as ModalFormDataType });
+            set({ isOpen: true, id: undefined });
+        } else if (actionType === "update" && id) {
+            set({ isOpen: true, id: id });
         } else {
             console.error("Data must be required to handle the update");
         }
