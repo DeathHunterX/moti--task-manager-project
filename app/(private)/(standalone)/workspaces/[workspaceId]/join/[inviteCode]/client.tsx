@@ -2,13 +2,13 @@
 
 import JoinWorkspaceForm from "@/components/shared/form/non-dialog/JoinWorkspaceForm";
 import PageLoader from "@/components/shared/PageLoader";
-import { useGetWorkspace } from "@/hooks/actions/useWorkspaces";
+import { useGetWorkspaceInfo } from "@/hooks/actions/useWorkspaces";
 import { useParams } from "next/navigation";
 import React from "react";
 
 const WorkspaceIdJoinClient = () => {
     const { workspaceId } = useParams();
-    const { data, isPending } = useGetWorkspace(workspaceId as string, {
+    const { data, isPending } = useGetWorkspaceInfo(workspaceId as string, {
         enabled: !!workspaceId,
     });
 

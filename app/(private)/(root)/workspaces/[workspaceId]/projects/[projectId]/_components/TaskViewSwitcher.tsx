@@ -22,7 +22,13 @@ import DataKanban from "./kanban/DataKanban";
 import { TaskStatusEnum } from "@/lib/validation/serverAction";
 import DataCalendar from "./calendar/DataCalendar";
 
-const TaskViewSwitcher = () => {
+interface TaskViewSwitcherProps {
+    hideProjectFilter?: boolean;
+}
+
+const TaskViewSwitcher = ({
+    hideProjectFilter = false,
+}: TaskViewSwitcherProps) => {
     const [{ status, assigneeId, projectId, dueDate }] = useTaskFilters();
     const [view, setView] = useQueryState("task-view", {
         defaultValue: "table",
@@ -30,11 +36,12 @@ const TaskViewSwitcher = () => {
     const { onOpen, setFormType, setActionType } = useFormModal();
 
     const workspaceId = useWorkspaceId();
+    const paramProjectId = useProjectId();
 
     const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(
         {
             workspaceId: workspaceId,
-            projectId: projectId,
+            projectId: paramProjectId || projectId,
             assigneeId,
             status,
             dueDate,
@@ -102,7 +109,7 @@ const TaskViewSwitcher = () => {
                 </div>
                 <Separator className="my-4" />
                 {/* Filter */}
-                <DataFilters hideProjectFilter={false} />
+                <DataFilters hideProjectFilter={hideProjectFilter} />
 
                 <Separator className="my-4" />
                 {isLoadingTasks ? (

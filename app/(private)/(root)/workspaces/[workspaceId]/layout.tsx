@@ -10,8 +10,18 @@ const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
     const { workspaceId } = useParams();
     const router = useRouter();
 
+    /** Description:
+     *   - Check if workspace id is in the db
+     *       + Having workspace in db
+     *          ++ Check if current user is a member of current workspace
+     *              +++ Current member => stay
+     *                +++ Not a current member => appear small ui and redirect to workspaces page
+     *       + Not having workspace in db => appear small ui with message not found and redirect to workspaces page
+     *
+     */
     const { data, isPending, isError } = useIsWorkspaceMember(
-        workspaceId as string
+        workspaceId as string,
+        { enabled: !!workspaceId }
     );
 
     const [countdown, setCountdown] = useState<number>(5);

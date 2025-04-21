@@ -42,7 +42,7 @@ export const useGetProjectById = (
     const workspaceId = rawWorkspaceId as string;
 
     const query = useQuery({
-        queryKey: ["projects", { projectId }],
+        queryKey: ["project", { projectId }],
         enabled: options?.enabled ?? (!!workspaceId && !!projectId),
         queryFn: async () => {
             if (!workspaceId) {
@@ -122,7 +122,10 @@ export const useEditProject = (projectId: string) => {
 
             queryClient.invalidateQueries({ queryKey: ["projects"] });
             queryClient.invalidateQueries({
-                queryKey: ["projects", { projectId }],
+                queryKey: ["project", { projectId }],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["tasks"],
             });
         },
         onError: (error: any) => {
@@ -137,3 +140,5 @@ export const useEditProject = (projectId: string) => {
     });
     return mutation;
 };
+
+// TODO: Delete project

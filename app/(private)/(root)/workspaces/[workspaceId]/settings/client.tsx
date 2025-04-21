@@ -87,15 +87,11 @@ const WorkspaceSettingsClient = () => {
     }
 
     return (
-        <div className="px-4 w-full ">
+        <div className="flex flex-col gap-y-4">
             <DeleteDialog />
             <ResetDialog />
 
-            <div className="flex flex-row justify-between">
-                <h1 className="ms-10 mb-1.5 text-2xl text-[#172B4D]">
-                    Settings
-                </h1>
-            </div>
+            <h1 className="ms-3 text-xl text-[#172B4D]">Settings</h1>
 
             <div className="flex flex-col mx-auto gap-y-4 lg:max-w-xl">
                 <div className="flex flex-row justify-center">

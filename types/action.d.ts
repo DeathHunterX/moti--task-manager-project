@@ -121,3 +121,14 @@ interface BulkUpdateTasksParams {
         position: number;
     }[];
 }
+
+/*
+ *  Analytics
+ */
+interface GetProjectAnalyticsParams {
+    projectId: string;
+}
+
+interface GetWorkspaceAnalyticsParams {
+    workspaceId: string;
+}

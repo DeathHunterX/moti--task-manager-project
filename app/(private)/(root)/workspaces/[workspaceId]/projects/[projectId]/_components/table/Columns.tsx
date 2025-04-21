@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { snakeCaseToTitleCase } from "@/lib/utils";
 import { TaskStatusEnum } from "@/lib/validation/serverAction";
 import DataActions from "./DataAction";
+import { MemberAvatar } from "@/components/shared/avatar/MemberAvatar";
 
 export const columns: ColumnDef<Task>[] = [
     {
@@ -63,6 +64,37 @@ export const columns: ColumnDef<Task>[] = [
         },
     },
     {
+        accessorKey: "assignee",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Asignee
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+        cell: ({ row }) => {
+            const assignee = row.original.assignee;
+
+            return (
+                <div className="flex items-center gap-x-2 text-sm font-medium">
+                    <MemberAvatar
+                        className="size-6"
+                        name={assignee?.name as string}
+                    />
+                    <span className="text-md font-medium">
+                        {assignee?.name}
+                    </span>
+                </div>
+            );
+        },
+    },
+    {
         accessorKey: "dueDate",
         header: ({ column }) => {
             return (
@@ -83,6 +115,7 @@ export const columns: ColumnDef<Task>[] = [
             return <TaskDate value={new Date(dueDate).toISOString() || ""} />;
         },
     },
+
     {
         accessorKey: "status",
         header: ({ column }) => {

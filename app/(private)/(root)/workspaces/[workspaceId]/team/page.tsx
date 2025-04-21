@@ -7,16 +7,7 @@ export const metadata: Metadata = {
 };
 
 const WorkspaceTeamPage = () => {
-    return (
-        <div className="px-4 w-full ">
-            <div className="flex flex-row justify-between">
-                <h1 className="ms-10 mb-1.5 text-2xl text-[#172B4D]">Teams</h1>
-            </div>
-            <div className="max-w-[75rem] mx-auto">
-                <WorkspaceTeamClient />
-            </div>
-        </div>
-    );
+    return <WorkspaceTeamClient />;
 };
 
 export default WorkspaceTeamPage;

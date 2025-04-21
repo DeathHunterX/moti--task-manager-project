@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import WorkspaceTable from "./_components/workspaceTable";
+
 import { useFormModal } from "@/hooks/use-form-modal";
+import WorkspaceTable from "./_components/WorkspaceTable";
 
 interface WorkspacesClientProps {
     workspaces: Workspace[];

@@ -130,3 +130,15 @@ export const BulkUpdateTasksSchema = z.object({
         })
     ),
 });
+
+/*
+ *  Analytics
+ */
+
+export const GetProjectAnalyticsSchema = z.object({
+    projectId: z.string({ message: "Project Id is required!" }),
+});
+
+export const GetWorkspaceAnalyticsSchema = z.object({
+    workspaceId: z.string({ message: "Workspace Id is required!" }),
+});

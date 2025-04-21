@@ -52,6 +52,7 @@ export const useIsWorkspaceMember = (
             if (!response.data) {
                 throw new Error("Invalid member data received");
             }
+
             return response.data as Member;
         },
     });
@@ -79,11 +80,16 @@ export const useRemoveWorkspaceMember = (workspaceId: string) => {
             toast.success("Successfully remove a member!");
 
             queryClient.invalidateQueries({
-                queryKey: ["members", { workspaceId }],
+                queryKey: ["workspaces"],
             });
             queryClient.invalidateQueries({
                 queryKey: ["workspace", { id: workspaceId }],
             });
+
+            queryClient.invalidateQueries({
+                queryKey: ["members", { workspaceId }],
+            });
+
             queryClient.invalidateQueries({
                 queryKey: ["check-member", { workspaceId }],
             });

@@ -123,6 +123,7 @@ export const isWorkspaceMember = async (
                 },
             },
         ];
+
         const [member] = await MemberModel.aggregate(pipeline);
 
         if (!member) {

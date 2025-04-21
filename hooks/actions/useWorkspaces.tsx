@@ -5,6 +5,7 @@ import {
     editWorkspace,
     getAllWorkspaces,
     getWorkspaceById,
+    getWorkspaceInfo,
     joinWorkspaceByInviteCode,
     resetInviteCode,
 } from "@/lib/actions/workspace.action";
@@ -54,6 +55,40 @@ export const useGetWorkspace = (
             if (!response.data) {
                 throw new Error("Invalid workspace data received");
             }
+            return response.data as Workspace;
+        },
+    });
+    return query;
+};
+
+export const useGetWorkspaceInfo = (
+    id: string,
+    options?: { enabled?: boolean }
+) => {
+    const query = useQuery({
+        queryKey: ["workspace", { id }],
+        enabled: options?.enabled ?? !!id,
+        queryFn: async () => {
+            const response = await getWorkspaceInfo({ workspaceId: id });
+
+            if (!response.success) {
+                const { status, error } = response;
+
+                ErrorToastMsg({
+                    title: `Error ${status ?? 500}`,
+                    description:
+                        error?.message ||
+                        "Something went wrong while creating workspace!",
+                });
+            }
+
+            if (!response.data) {
+                ErrorToastMsg({
+                    title: `Error ${500}`,
+                    description: "Invalid workspace data received",
+                });
+            }
+
             return response.data as Workspace;
         },
     });

@@ -29,7 +29,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
             },
             {
                 title: "My Tasks",
-                url: "#",
+                url: "/tasks",
                 icon: CircleCheckBig,
             },
             {

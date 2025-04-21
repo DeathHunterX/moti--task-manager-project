@@ -28,7 +28,7 @@ import {
 import { generateInviteCode, getCloudinaryPublicId } from "../utils";
 import { revalidatePath } from "next/cache";
 import { deleteImage, uploadImage } from "./image.action";
-import { checkAdminRole } from "./queries.action";
+import { checkAdminRole, checkMembers } from "./queries.action";
 
 export const createWorkspace = async (
     params: CreateWorkspaceParams
@@ -195,11 +195,48 @@ export const getWorkspaceById = async (
     }
 
     const { workspaceId } = validationResult.params!;
+    const userId = validationResult.session?.user.id!;
+
+    try {
+        await checkMembers(workspaceId, userId);
+
+        const workspace = await WorkspaceModel.findOne({
+            _id: workspaceId,
+        });
+
+        if (!workspace) {
+            throw new Error("Failed to get workspace!");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(workspace)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const getWorkspaceInfo = async (
+    params: GetWorkspaceByIdParams
+): Promise<ActionResponse<Workspace>> => {
+    const validationResult = await action({
+        params,
+        schema: GetWorkspaceByIdSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { workspaceId } = validationResult.params!;
 
     try {
         const workspace = await WorkspaceModel.findOne({
             _id: workspaceId,
-        });
+        }).select("name inviteCode");
 
         if (!workspace) {
             throw new Error("Failed to get workspace!");
@@ -427,7 +464,7 @@ export const resetInviteCode = async (
 
 export const joinWorkspaceByInviteCode = async (
     params: JoinWorkspaceByInviteCodeParams
-): Promise<ActionResponse> => {
+): Promise<ActionResponse<Workspace>> => {
     const validationResult = await action({
         params,
         schema: JoinWorkspaceByInviteCodeSchema,
@@ -448,24 +485,19 @@ export const joinWorkspaceByInviteCode = async (
             throw new BadRequestError("Invalid invite code!");
         }
 
-        const [newMember] = await MemberModel.create([
-            {
-                userId,
-                workspaceId: workspace._id,
-                role: "MEMBER",
-            },
-        ]);
+        const newMember = await MemberModel.insertOne({
+            userId,
+            workspaceId: workspace._id,
+            role: "MEMBER",
+        });
 
         if (!newMember) {
             throw new InternalServerError("Failed to add a member");
         }
 
-        revalidatePath("/workspaces");
-        revalidatePath("/your-work");
-
         return {
             success: true,
-            data: JSON.parse(JSON.stringify(newMember)),
+            data: JSON.parse(JSON.stringify(workspace)),
             status: 200,
         };
     } catch (error) {
