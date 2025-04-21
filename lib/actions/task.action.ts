@@ -4,18 +4,19 @@ import { ActionResponse, ErrorResponse } from "@/types/server";
 import handleError from "../handlers/error";
 import action from "../handlers/action";
 import {
+    BulkUpdateTasksSchema,
     CreateTaskSchema,
     DeleteTaskSchema,
     EditTaskSchema,
     GetTaskByIdSchema,
     GetTasksSchema,
 } from "../validation/serverAction";
-import TaskModel from "../mongodb/models/task.model";
 import { checkMembers } from "./queries.action";
 import { BadRequestError, NotFoundError } from "../http-error";
 import ProjectModel from "../mongodb/models/project.model";
 import MemberModel from "../mongodb/models/member.model";
 import UserModel from "../mongodb/models/user.model";
+import TaskModel from "../mongodb/models/task.model";
 
 export const createTask = async (
     params: CreateTaskParams
@@ -278,7 +279,61 @@ export const deleteTask = async (
         return {
             success: true,
             data: JSON.parse(JSON.stringify(task)),
-            status: 201,
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const bulkUpdateTask = async (
+    params: BulkUpdateTasksParams
+): Promise<ActionResponse<Task>> => {
+    const validationResult = await action({
+        params,
+        schema: BulkUpdateTasksSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { tasks } = validationResult.params!;
+    const userId = validationResult.session?.user.id!;
+
+    const taskIds = tasks.map((t) => t._id);
+    try {
+        const existingTasks = await TaskModel.find({ _id: { $in: taskIds } });
+
+        const workspaceIds = new Set(
+            existingTasks.map((task) => task.workspaceId.toString())
+        );
+
+        const workspaceId = [...workspaceIds][0];
+
+        await checkMembers(workspaceId, userId);
+
+        if (workspaceIds.size !== 1) {
+            throw new BadRequestError(
+                "All tasks must belong to the same workspace."
+            );
+        }
+
+        const taskUpdates = await Promise.all(
+            tasks.map(({ _id, status, position }) =>
+                TaskModel.findByIdAndUpdate(
+                    _id,
+                    { status, position },
+                    { new: true }
+                )
+            )
+        );
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(taskUpdates)),
+            status: 200,
         };
     } catch (error) {
         return handleError(error) as ErrorResponse;

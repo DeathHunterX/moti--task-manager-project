@@ -57,6 +57,7 @@ export const columns: ColumnDef<Task>[] = [
                         name={project?.name as string}
                         image={project?.image as string}
                     />
+                    <span className="text-md font-medium">{project?.name}</span>
                 </div>
             );
         },

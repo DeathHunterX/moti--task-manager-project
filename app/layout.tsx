@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AppMetadata } from "./metadata";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "@/styles/globals.css";
 import { ToastContainer, Zoom } from "react-toastify";
 
 // Providers

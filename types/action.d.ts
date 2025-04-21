@@ -113,3 +113,11 @@ interface DeleteTaskParams {
     taskId: string;
     workspaceId: string;
 }
+
+interface BulkUpdateTasksParams {
+    tasks: {
+        _id: string;
+        status: TaskStatus;
+        position: number;
+    }[];
+}

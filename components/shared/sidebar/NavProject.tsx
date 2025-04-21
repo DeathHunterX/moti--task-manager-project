@@ -49,6 +49,9 @@ export function NavProject() {
                                     image={item.image as string}
                                     name={item.name}
                                 />
+                                <span className="text-md font-medium">
+                                    {item.name}
+                                </span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

@@ -1,5 +1,5 @@
 "use client";
-import { Fragment } from "react";
+import { Fragment, useCallback } from "react";
 import { Loader, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -7,14 +7,20 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useProjectId, useWorkspaceId } from "@/hooks/use-params";
-import { useGetTasks, useTaskFilters } from "@/hooks/actions/useTask";
+import {
+    useBulkUpdateTasks,
+    useGetTasks,
+    useTaskFilters,
+} from "@/hooks/actions/useTask";
 import { useFormModal } from "@/hooks/use-form-modal";
 
 import { useQueryState } from "nuqs";
 import DataFilters from "./DataFilters";
 import { columns } from "./table/Columns";
 import { DataTable } from "./table/DataTable";
-import DataKanban from "./DataKanban";
+import DataKanban from "./kanban/DataKanban";
+import { TaskStatusEnum } from "@/lib/validation/serverAction";
+import DataCalendar from "./calendar/DataCalendar";
 
 const TaskViewSwitcher = () => {
     const [{ status, assigneeId, projectId, dueDate }] = useTaskFilters();
@@ -24,7 +30,6 @@ const TaskViewSwitcher = () => {
     const { onOpen, setFormType, setActionType } = useFormModal();
 
     const workspaceId = useWorkspaceId();
-    const paramProjectId = useProjectId();
 
     const { data: tasks, isLoading: isLoadingTasks } = useGetTasks(
         {
@@ -38,11 +43,23 @@ const TaskViewSwitcher = () => {
             enabled: !!workspaceId,
         }
     );
+
+    const { mutate: bulkUpdateMutate } = useBulkUpdateTasks();
+
     const handleOpenCreateTask = () => {
         setFormType("task");
         setActionType("create");
         onOpen();
     };
+
+    const onKanbanChange = useCallback(
+        (
+            tasks: { _id: string; status: TaskStatusEnum; position: number }[]
+        ) => {
+            bulkUpdateMutate({ tasks });
+        },
+        []
+    );
 
     return (
         <Tabs
@@ -99,11 +116,14 @@ const TaskViewSwitcher = () => {
                         </TabsContent>
 
                         <TabsContent value="kanban">
-                            <DataKanban data={tasks ?? []} />
+                            <DataKanban
+                                data={tasks ?? []}
+                                onChange={onKanbanChange}
+                            />
                         </TabsContent>
 
                         <TabsContent value="calendar">
-                            {JSON.stringify(tasks)}
+                            <DataCalendar data={tasks ?? []} />
                         </TabsContent>
                     </Fragment>
                 )}

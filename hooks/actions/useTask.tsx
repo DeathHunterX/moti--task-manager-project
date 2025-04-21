@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { ErrorToastMsg } from "@/components/shared/Toast";
 import {
+    bulkUpdateTask,
     createTask,
     deleteTask,
     editTask,
@@ -77,7 +78,12 @@ export const useGetTasks = (
     const query = useQuery({
         queryKey: [
             "tasks",
-            { workspaceId, projectId, status, assigneeId, dueDate, search },
+            workspaceId,
+            projectId,
+            status,
+            assigneeId,
+            dueDate,
+            search,
         ],
         enabled: options?.enabled ?? !!workspaceId,
         queryFn: async () => {
@@ -160,8 +166,7 @@ export const useEditTask = (taskId: string) => {
             ErrorToastMsg({
                 title: `Error ${status}`,
                 description:
-                    errorMessage ||
-                    "Something went wrong while editing workspace!",
+                    errorMessage || "Something went wrong while editing task!",
             });
         },
     });
@@ -195,8 +200,41 @@ export const useDeleteTask = () => {
             ErrorToastMsg({
                 title: `Error ${status}`,
                 description:
-                    errorMessage ||
-                    "Something went wrong while editing workspace!",
+                    errorMessage || "Something went wrong while deleting task!",
+            });
+        },
+    });
+    return mutation;
+};
+
+export const useBulkUpdateTasks = () => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: async (data: BulkUpdateTasksParams) => {
+            const response = await bulkUpdateTask(data);
+
+            if (!response.success) {
+                // Throw an error if the response indicates failure
+                const status = response?.status ?? 500;
+                const message =
+                    response?.error?.message || "Something went wrong";
+                throw new Error(`${status}: ${message}`);
+            }
+
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success("Tasks updated!");
+
+            queryClient.invalidateQueries({ queryKey: ["tasks"] });
+        },
+        onError: (error: any) => {
+            const [status, errorMessage] = error.message.split(":");
+            ErrorToastMsg({
+                title: `Error ${status}`,
+                description:
+                    errorMessage || "Something went wrong while editing tasks!",
             });
         },
     });

@@ -120,3 +120,13 @@ export const DeleteTaskSchema = z.object({
     taskId: z.string(),
     workspaceId: z.string(),
 });
+
+export const BulkUpdateTasksSchema = z.object({
+    tasks: z.array(
+        z.object({
+            _id: z.string(),
+            status: z.nativeEnum(TaskStatusEnum),
+            position: z.number().int().positive().min(1000).max(1_000_000),
+        })
+    ),
+});

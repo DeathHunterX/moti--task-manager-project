@@ -32,7 +32,6 @@ const ProjectAvatar = ({ image = "", name, className }: ProjectAvatarProps) => {
                     <div className="size-6 bg-gradient-to-bl from-violet-500 to-fuchsia-500 rounded-sm" />
                 )}
             </div>
-            {name}
         </div>
     );
 };

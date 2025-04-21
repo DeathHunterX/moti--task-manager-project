@@ -45,6 +45,9 @@ const ProjectIdClient = () => {
                         }
                         className="size-8"
                     />
+                    <span className="text-md font-medium">
+                        {projectData?.name}
+                    </span>
                 </div>
                 <div>
                     <Button
