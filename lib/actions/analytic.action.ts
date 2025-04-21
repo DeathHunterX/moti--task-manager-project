@@ -19,7 +19,7 @@ import { UnauthorizedError } from "../http-error";
 
 export const getProjectAnalytics = async (
     params: GetProjectAnalyticsParams
-): Promise<ActionResponse<Project>> => {
+): Promise<ActionResponse<ProjectAnalytics>> => {
     const validationResult = await action({
         params,
         schema: GetProjectAnalyticsSchema,
@@ -54,7 +54,7 @@ export const getProjectAnalytics = async (
         const lastMonthEnd = endOfMonth(subMonths(now, 1));
 
         const baseMatch = {
-            projectId: new Types.ObjectId(projectId),
+            projectId: projectId,
         };
 
         const getCount = async (
@@ -103,18 +103,16 @@ export const getProjectAnalytics = async (
             success: true,
             data: JSON.parse(
                 JSON.stringify({
-                    data: {
-                        taskCount,
-                        taskDifference,
-                        assignedTaskCount,
-                        assignedTaskDifference,
-                        completedTaskCount,
-                        completedTaskDifference,
-                        incompleteTaskCount,
-                        incompleteTaskDifference,
-                        overdueTaskCount,
-                        overdueTaskDifference,
-                    },
+                    taskCount,
+                    taskDifference,
+                    assignedTaskCount,
+                    assignedTaskDifference,
+                    completedTaskCount,
+                    completedTaskDifference,
+                    incompleteTaskCount,
+                    incompleteTaskDifference,
+                    overdueTaskCount,
+                    overdueTaskDifference,
                 })
             ),
             status: 200,

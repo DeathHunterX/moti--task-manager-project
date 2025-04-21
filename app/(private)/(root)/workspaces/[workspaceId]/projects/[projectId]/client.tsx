@@ -11,21 +11,31 @@ import TaskViewSwitcher from "./_components/TaskViewSwitcher";
 import { useGetProjectById } from "@/hooks/actions/useProjects";
 import { useFormModal } from "@/hooks/use-form-modal";
 import { useProjectId } from "@/hooks/use-params";
+import { useGetProjectAnalytics } from "@/hooks/actions/useAnalytics";
+import Analytics from "@/components/shared/analytics/Analytics";
 
 const ProjectIdClient = () => {
     const projectId = useProjectId();
 
     const { onOpen, setFormType, setActionType } = useFormModal();
 
-    const { data: projectData, isLoading } = useGetProjectById(projectId, {
-        enabled: !!projectId,
-    });
+    const { data: projectData, isLoading: isLoadingProjectData } =
+        useGetProjectById(projectId, {
+            enabled: !!projectId,
+        });
+
+    const { data: projectAnalyticsData, isLoading: isLoadingProjectAnalytics } =
+        useGetProjectAnalytics(projectId, {
+            enabled: !!projectId,
+        });
+
+    const isLoading = isLoadingProjectData || isLoadingProjectAnalytics;
 
     if (isLoading) {
         return <PageLoader />;
     }
 
-    if (!projectData) {
+    if (!projectData || !projectAnalyticsData) {
         return <PageError message="Project not found." />;
     }
 
@@ -63,7 +73,7 @@ const ProjectIdClient = () => {
                     </Button>
                 </div>
             </div>
-
+            {projectAnalyticsData && <Analytics data={projectAnalyticsData} />}
             <TaskViewSwitcher hideProjectFilter />
         </div>
     );

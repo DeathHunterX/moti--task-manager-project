@@ -38,6 +38,23 @@ interface Task {
     position: number;
 }
 
+interface ProjectAnalytics {
+    taskCount: number;
+    taskDifference: number;
+
+    assignedTaskCount: number;
+    assignedTaskDifference: number;
+
+    completedTaskCount: number;
+    completedTaskDifference: number;
+
+    incompleteTaskCount: number;
+    incompleteTaskDifference: number;
+
+    overdueTaskCount: number;
+    overdueTaskDifference: number;
+}
+
 interface PaginatedSearchParams {
     page?: number;
     pageSize?: number;
