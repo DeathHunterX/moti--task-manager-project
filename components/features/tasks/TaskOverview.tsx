@@ -39,20 +39,22 @@ const TaskOverview = ({ data }: TaskOverviewProps) => {
             <div className="flex flex-col gap-y-4">
                 <OverviewProperty label="Assignee">
                     <MemberAvatar
-                        name={data.assignee.name}
+                        name={data?.assignee?.name || ""}
                         className="size-6"
                     />
-                    <p className="text-sm font-medium">{data.assignee.name}</p>
+                    <p className="text-sm font-medium">
+                        {data?.assignee?.name}
+                    </p>
                 </OverviewProperty>
                 <OverviewProperty label="Due Date">
                     <TaskDate
-                        value={new Date(data.dueDate).toISOString() || ""}
+                        value={new Date(data?.dueDate).toISOString()}
                         className="text-sm font-medium"
                     />
                 </OverviewProperty>
                 <OverviewProperty label="Status">
-                    <Badge variant={data.status as TaskStatusEnum}>
-                        {snakeCaseToTitleCase(data.status)}
+                    <Badge variant={data?.status as TaskStatusEnum}>
+                        {snakeCaseToTitleCase(data?.status)}
                     </Badge>
                 </OverviewProperty>
             </div>

@@ -12,6 +12,8 @@ import {
 import { useWorkspaceId } from "@/hooks/use-params";
 import { useDeleteTask } from "@/hooks/actions/useTasks";
 import { useFormModal } from "@/hooks/use-form-modal";
+import TaskSheet from "@/components/shared/sheet/TaskSheet";
+import { Fragment } from "react";
 
 interface DataActionsProps {
     id: string;
@@ -46,10 +48,6 @@ const DataActions = ({ id, projectId, children }: DataActionsProps) => {
         deleteTaskMutate({ taskId: id, workspaceId });
     };
 
-    const onOpenTask = () => {
-        router.push(`/workspaces/${workspaceId}/tasks/${id}`);
-    };
-
     const onOpenProject = () => {
         router.push(`/workspaces/${workspaceId}/projects/${projectId}`);
     };
@@ -60,13 +58,17 @@ const DataActions = ({ id, projectId, children }: DataActionsProps) => {
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem
-                        onClick={onOpenTask}
-                        className="font-medium p-[10px]"
-                    >
-                        <ExternalLink className="size-4 mr-2 stroke-2" />
-                        Task Details
-                    </DropdownMenuItem>
+                    <TaskSheet id={id}>
+                        <DropdownMenuItem
+                            className="font-medium p-[10px]"
+                            onSelect={(e) => e.preventDefault()}
+                        >
+                            <Fragment>
+                                <ExternalLink className="size-4 mr-2 stroke-2" />
+                                Task Details
+                            </Fragment>
+                        </DropdownMenuItem>
+                    </TaskSheet>
                     <DropdownMenuItem
                         onClick={onOpenProject}
                         className="font-medium p-[10px]"

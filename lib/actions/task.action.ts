@@ -17,6 +17,7 @@ import ProjectModel from "../mongodb/models/project.model";
 import MemberModel from "../mongodb/models/member.model";
 import UserModel from "../mongodb/models/user.model";
 import TaskModel from "../mongodb/models/task.model";
+import mongoose from "mongoose";
 
 export const createTask = async (
     params: CreateTaskParams
@@ -173,9 +174,68 @@ export const getTaskById = async (
     const { taskId } = validationResult.params!;
 
     try {
-        const task = await TaskModel.findOne({
-            _id: taskId,
-        });
+        const pipeline: any[] = [
+            {
+                $lookup: {
+                    from: "projects",
+                    localField: "projectId",
+                    foreignField: "_id",
+                    as: "projectSec",
+                },
+            },
+            {
+                $lookup: {
+                    from: "members",
+                    localField: "assigneeId",
+                    foreignField: "_id",
+                    as: "assigneeSec",
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "assigneeSec.userId",
+                    foreignField: "_id",
+                    as: "userSec",
+                },
+            },
+            { $unwind: "$projectSec" },
+            { $unwind: "$assigneeSec" },
+            { $unwind: "$userSec" },
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(taskId!),
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    assignee: {
+                        _id: "$assigneeSec._id",
+                        name: "$userSec.name",
+                        email: "$userSec.email",
+                        role: "$assigneeSec.role",
+                    },
+                    assigneeId: 1,
+                    created_at: 1,
+                    description: 1,
+                    dueDate: 1,
+                    name: 1,
+                    position: 1,
+                    project: {
+                        _id: "$projectSec._id",
+                        name: "$projectSec.name",
+                        image: "$projectSec.image",
+                    },
+                    projectId: 1,
+                    status: 1,
+                    updated_at: 1,
+                    workspaceId: 1,
+                },
+            },
+        ];
+
+        const [task] = await TaskModel.aggregate(pipeline);
 
         if (!task) {
             throw new NotFoundError("Failed to get task!");

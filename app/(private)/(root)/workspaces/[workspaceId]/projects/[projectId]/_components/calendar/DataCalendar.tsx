@@ -110,7 +110,7 @@ const DataCalendar = ({ data }: DataCalendarProps) => {
                     <EventCard
                         id={event.id}
                         title={event.title}
-                        assignee={event.assignee}
+                        assignee={event.assignee as Member}
                         project={event.project as Project}
                         status={event.status as TaskStatusEnum}
                     />

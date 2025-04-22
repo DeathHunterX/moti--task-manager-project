@@ -40,7 +40,7 @@ interface Task {
     projectId: string;
     project?: Project;
     assigneeId: string;
-    assignee?: User;
+    assignee?: Member;
     description: string;
     dueDate: Date;
     status: TaskStatusType;

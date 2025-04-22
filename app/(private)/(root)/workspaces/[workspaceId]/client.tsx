@@ -98,7 +98,7 @@ export const TaskList = ({ data, total }: TaskListProps) => {
                         .slice(0, 6)
                         .map((task) => (
                             <li key={task._id}>
-                                <TaskSheet data={task}>
+                                <TaskSheet id={task._id}>
                                     <Card className="shadow-none rounded-lg hover:opacity-75 transition">
                                         <CardContent className="p-4">
                                             <p className="text-base font-medium truncate">

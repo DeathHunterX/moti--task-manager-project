@@ -10,26 +10,29 @@ import {
 
 import TaskOverview from "@/components/features/tasks/TaskOverview";
 import TaskDescription from "@/components/features/tasks/TaskDescription";
+import { useGetTaskById } from "@/hooks/actions/useTasks";
+import { Loader } from "lucide-react";
 
 interface TaskSheetProps {
-    data: Task;
+    id: string;
     children: React.ReactNode;
 }
 
-const TaskSheet = ({ data, children }: TaskSheetProps) => {
+const TaskSheet = ({ id, children }: TaskSheetProps) => {
+    const { data, isLoading } = useGetTaskById(id);
     return (
         <Sheet>
             <SheetTrigger asChild>{children}</SheetTrigger>
             <SheetContent className="h-full gap-0">
                 <SheetHeader>
                     <SheetTitle>
-                        {data.project?.name} &gt; {data.name}
+                        {data?.project?.name} &gt; {data?.name}
                     </SheetTitle>
                 </SheetHeader>
 
                 <div className="flex flex-col p-4 gap-y-10 col-span-1">
-                    <TaskOverview data={data} />
-                    <TaskDescription data={data} />
+                    {data && <TaskOverview data={data} />}
+                    {data && <TaskDescription data={data} />}
                 </div>
 
                 <SheetFooter>
