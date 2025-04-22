@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 
 export const useGetProjects = (workspaceId: string) => {
     const query = useQuery({
-        queryKey: ["projects"],
+        queryKey: ["projects", { workspaceId }],
         queryFn: async () => {
             const response = await getAllProjects({ workspaceId: workspaceId });
 

@@ -35,6 +35,7 @@ export const useCreateTask = () => {
             toast.success("Successfully create a task!");
 
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");
@@ -61,7 +62,7 @@ export const useTaskFilters = () => {
 interface UseGetTasksParamsProp {
     workspaceId: string;
     projectId?: string | null;
-    status?: TaskStatus | null;
+    status?: TaskStatusEnum | null;
     assigneeId?: string | null;
     dueDate?: string | null;
     search?: string | null;
@@ -160,6 +161,10 @@ export const useEditTask = (taskId: string) => {
 
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             queryClient.invalidateQueries({ queryKey: ["tasks", { taskId }] });
+            queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            queryClient.invalidateQueries({
+                queryKey: ["workspace-analytics"],
+            });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");
@@ -194,6 +199,7 @@ export const useDeleteTask = () => {
             toast.success("Successfully delete workspace!");
 
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");
@@ -228,6 +234,7 @@ export const useBulkUpdateTasks = () => {
             toast.success("Tasks updated!");
 
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");

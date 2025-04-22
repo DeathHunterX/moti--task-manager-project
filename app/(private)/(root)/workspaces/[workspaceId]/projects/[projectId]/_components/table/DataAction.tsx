@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useWorkspaceId } from "@/hooks/use-params";
-import { useDeleteTask } from "@/hooks/actions/useTask";
+import { useDeleteTask } from "@/hooks/actions/useTasks";
 import { useFormModal } from "@/hooks/use-form-modal";
 
 interface DataActionsProps {

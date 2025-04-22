@@ -6,7 +6,7 @@ import TaskForm from "./task/TaskForm";
 
 import { ModalFormType } from "@/hooks/use-form-modal";
 import { useGetProjectById } from "@/hooks/actions/useProjects";
-import { useGetTaskById } from "@/hooks/actions/useTask";
+import { useGetTaskById } from "@/hooks/actions/useTasks";
 
 interface FormContainerProps {
     formType: ModalFormType;

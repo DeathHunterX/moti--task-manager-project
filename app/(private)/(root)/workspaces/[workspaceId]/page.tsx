@@ -1,7 +1,8 @@
 import React from "react";
+import WorkspaceByIdClient from "./client";
 
 const WorkspaceByIdPage = () => {
-    return <div>WorkspaceByIdPage</div>;
+    return <WorkspaceByIdClient />;
 };
 
 export default WorkspaceByIdPage;

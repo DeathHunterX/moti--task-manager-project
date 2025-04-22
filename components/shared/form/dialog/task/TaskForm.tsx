@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useGetProjects } from "@/hooks/actions/useProjects";
 import { useGetWorkspaceMembers } from "@/hooks/actions/useMembers";
-import { useCreateTask, useEditTask } from "@/hooks/actions/useTask";
+import { useCreateTask, useEditTask } from "@/hooks/actions/useTasks";
 
 import { useWorkspaceId } from "@/hooks/use-params";
 import {

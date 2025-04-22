@@ -7,6 +7,8 @@ const MemberSchema = new Schema(
         userId: { type: Types.ObjectId, required: true, ref: "User" },
         workspaceId: { type: Types.ObjectId, required: true, ref: "Workspace" },
         role: { type: String, enum: roleEnum },
+        createdAt: { type: Date, default: new Date() },
+        updatedAt: { type: Date, default: new Date() },
     },
     { timestamps: true }
 );

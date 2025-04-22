@@ -31,33 +31,42 @@ const PrivateNavBar = () => {
 
                     <div className="">
                         <div className="flex flex-row gap-x-3.5 items-center">
-                            <div className="flex max-[735px]:hidden flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs">
+                            <Link
+                                href="/"
+                                className="flex max-[735px]:hidden flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs"
+                            >
                                 <span className="text-sm">Your work</span>
-                                <ChevronDown size={14} />
-                            </div>
-                            <div className="flex max-[835px]:hidden flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs">
+                                {/* <ChevronDown size={14} /> */}
+                            </Link>
+                            <Link
+                                href="/workspaces"
+                                className="flex max-[835px]:hidden flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs"
+                            >
                                 <span className="text-sm">Workspaces</span>
-                                <ChevronDown size={14} />
-                            </div>
+                                {/* <ChevronDown size={14} /> */}
+                            </Link>
 
-                            <div className="flex max-[935px]:hidden flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs">
+                            {/* <Link
+                                href="#"
+                                className="flex max-[935px]:hidden flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs"
+                            >
                                 <span className="text-sm">Projects</span>
                                 <ChevronDown size={14} />
-                            </div>
-                            <div className="">
+                            </Link> */}
+                            {/* <div className="">
                                 <div className="hidden max-[935px]:flex flex-row gap-x-2 items-center hover:bg-gray-200 px-2.5 py-1.5 rounded-xs">
                                     <span className="text-sm">More</span>
                                     <ChevronDown size={14} />
                                 </div>
-                            </div>
-                            <div className="">
+                            </div> */}
+                            {/* <div className="">
                                 <Button className="hidden lg:block bg-blue-500 hover:bg-blue-700">
                                     Create
                                 </Button>
                                 <Button className="block min-lg:hidden max-sm:hidden bg-blue-500 hover:bg-blue-700">
                                     <Plus />
                                 </Button>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { Schema, model, models, Types } from "mongoose";
+import { model, models, Schema, Types } from "mongoose";
 
 const accountSchema = new Schema(
     {

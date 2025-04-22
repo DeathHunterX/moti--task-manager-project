@@ -1,6 +1,6 @@
 "use client";
 
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, Loader } from "lucide-react";
 
 import {
     SidebarGroup,
@@ -19,7 +19,8 @@ export function NavProject() {
     const { setFormType, setActionType, onOpen } = useFormModal();
 
     const workspaceId = useWorkspaceId();
-    const { data } = useGetProjects(workspaceId as string);
+
+    const { data, isLoading } = useGetProjects(workspaceId as string);
 
     const handleOpenProjectForm = () => {
         setFormType("project");

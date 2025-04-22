@@ -72,7 +72,6 @@ const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
         <SidebarProvider className="min-h-0">
             <AppSidebar />
             <div className="relative mt-2 w-full">
-                <SidebarTrigger className="absolute top-0" />
                 <div className="px-5">{children}</div>
             </div>
         </SidebarProvider>

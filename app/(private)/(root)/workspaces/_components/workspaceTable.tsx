@@ -21,7 +21,6 @@ import {
 
 import Image from "next/image";
 import { Ellipsis } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const WorkspaceTable = ({ data }: { data: Workspace[] }) => {

@@ -11,7 +11,7 @@ import {
     useBulkUpdateTasks,
     useGetTasks,
     useTaskFilters,
-} from "@/hooks/actions/useTask";
+} from "@/hooks/actions/useTasks";
 import { useFormModal } from "@/hooks/use-form-modal";
 
 import { useQueryState } from "nuqs";

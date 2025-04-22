@@ -98,7 +98,6 @@ const SelectInputField = <S extends FieldValues>({
                         </Select>
                     )}
 
-                    <FormMessage />
                     <FormMessage className="text-left" />
                 </FormItem>
             )}

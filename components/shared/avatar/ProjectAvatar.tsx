@@ -7,7 +7,6 @@ interface ProjectAvatarProps {
     image?: string;
     name: string;
     className?: string;
-    fallbackClassName?: string;
 }
 
 const ProjectAvatar = ({ image = "", name, className }: ProjectAvatarProps) => {

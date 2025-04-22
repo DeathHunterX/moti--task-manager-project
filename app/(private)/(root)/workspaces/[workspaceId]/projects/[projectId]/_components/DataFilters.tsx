@@ -11,7 +11,7 @@ import { statusOptions } from "@/constants";
 
 import { useGetWorkspaceMembers } from "@/hooks/actions/useMembers";
 import { useGetProjects } from "@/hooks/actions/useProjects";
-import { useTaskFilters } from "@/hooks/actions/useTask";
+import { useTaskFilters } from "@/hooks/actions/useTasks";
 import { useWorkspaceId } from "@/hooks/use-params";
 import { TaskStatusEnum } from "@/lib/validation/serverAction";
 

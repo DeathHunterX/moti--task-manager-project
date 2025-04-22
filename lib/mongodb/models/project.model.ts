@@ -5,6 +5,8 @@ const ProjectSchema = new Schema(
         workspaceId: { type: Types.ObjectId, required: true, ref: "Workspace" },
         name: { type: String, required: true },
         image: { type: String },
+        createdAt: { type: Date, default: new Date() },
+        updatedAt: { type: Date, default: new Date() },
     },
     { timestamps: true }
 );

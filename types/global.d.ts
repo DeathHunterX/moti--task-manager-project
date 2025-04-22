@@ -1,4 +1,12 @@
-type TaskStatus = "BACKLOG" | "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
+type TaskStatusType = "BACKLOG" | "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
+type MemberRoleType = "ADMIN" | "MEMBER";
+
+interface User {
+    _id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+}
 
 interface Workspace {
     _id: string;
@@ -14,7 +22,8 @@ interface Member {
     userId: string;
     name: string;
     image: string;
-    role: "ADMIN" | "MEMBER";
+    email: string;
+    role: MemberRoleType;
 }
 
 interface Project {
@@ -34,11 +43,13 @@ interface Task {
     assignee?: User;
     description: string;
     dueDate: Date;
-    status: TaskStatus;
+    status: TaskStatusType;
     position: number;
+    created_at?: Date;
+    updated_at?: Date;
 }
 
-interface ProjectAnalytics {
+interface Analytics {
     taskCount: number;
     taskDifference: number;
 

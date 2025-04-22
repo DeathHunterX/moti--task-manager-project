@@ -1,3 +1,10 @@
+import {
+    AppWindow,
+    CircleCheckBig,
+    SettingsIcon,
+    UsersIcon,
+} from "lucide-react";
+
 export const publicNavBarMap = [
     {
         title: "Feature",
@@ -86,6 +93,34 @@ export const publicNavBarMap = [
         items: [],
     },
 ];
+
+export const privateSidebarMap = [
+    {
+        title: "Summary",
+        url: "/",
+        icon: AppWindow,
+    },
+    {
+        title: "My Tasks",
+        url: "/tasks",
+        icon: CircleCheckBig,
+    },
+    {
+        title: "Team",
+        url: "/team",
+        icon: UsersIcon,
+    },
+    {
+        title: "Settings",
+        url: "/settings",
+        icon: SettingsIcon,
+    },
+];
+
+export const MemberRoleDict = {
+    ADMIN: "ADMIN",
+    MEMBER: "MEMBER",
+};
 
 export const statusEnum = [
     "BACKLOG",

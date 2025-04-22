@@ -29,6 +29,8 @@ import { generateInviteCode, getCloudinaryPublicId } from "../utils";
 import { revalidatePath } from "next/cache";
 import { deleteImage, uploadImage } from "./image.action";
 import { checkAdminRole, checkMembers } from "./queries.action";
+import TaskModel from "../mongodb/models/task.model";
+import ProjectModel from "../mongodb/models/project.model";
 
 export const createWorkspace = async (
     params: CreateWorkspaceParams
@@ -402,12 +404,38 @@ export const deleteWorkspace = async (
             { session }
         );
 
-        await MemberModel.findOneAndDelete(
+        const task = await TaskModel.deleteMany(
             {
                 workspaceId: workspaceId,
             },
             { session }
         );
+        if (!task) {
+            throw new NotFoundError("Failed to delete tasks");
+        }
+
+        const project = await ProjectModel.deleteMany(
+            {
+                workspaceId: workspaceId,
+            },
+            {
+                session,
+            }
+        );
+        if (!project) {
+            throw new NotFoundError("Failed to delete projects");
+        }
+
+        const members = await MemberModel.deleteMany(
+            {
+                workspaceId: workspaceId,
+            },
+            { session }
+        );
+
+        if (!members) {
+            throw new NotFoundError("Failed to delete members");
+        }
 
         await session.commitTransaction();
 
@@ -485,7 +513,7 @@ export const joinWorkspaceByInviteCode = async (
             throw new BadRequestError("Invalid invite code!");
         }
 
-        const newMember = await MemberModel.insertOne({
+        const newMember = await MemberModel.create({
             userId,
             workspaceId: workspace._id,
             role: "MEMBER",

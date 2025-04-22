@@ -1,50 +1,19 @@
 "use client";
-
-import * as React from "react";
-import {
-    AppWindow,
-    CircleCheckBig,
-    SettingsIcon,
-    UsersIcon,
-} from "lucide-react";
-
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarHeader,
+    SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 import Image from "next/image";
 import { NavMain } from "./NavMain";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { NavProject } from "./NavProject";
+import { privateSidebarMap } from "@/constants";
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
-    const data = {
-        navMain: [
-            {
-                title: "Summary",
-                url: "/",
-                icon: AppWindow,
-            },
-            {
-                title: "My Tasks",
-                url: "/tasks",
-                icon: CircleCheckBig,
-            },
-            {
-                title: "Settings",
-                url: "/settings",
-                icon: SettingsIcon,
-            },
-            {
-                title: "Team",
-                url: "/team",
-                icon: UsersIcon,
-            },
-        ],
-    };
-
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader className="flex flex-row justify-center items-center">
@@ -59,9 +28,13 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
             </SidebarHeader>
             <SidebarContent>
                 <WorkspaceSwitcher />
-                <NavMain items={data.navMain} />
+                <NavMain items={privateSidebarMap} />
                 <NavProject />
             </SidebarContent>
+
+            <SidebarFooter className="items-end">
+                <SidebarTrigger className="mb-8" />
+            </SidebarFooter>
         </Sidebar>
     );
 };

@@ -1,7 +1,9 @@
 import { ErrorToastMsg } from "@/components/shared/Toast";
 import {
+    addWorkspaceMember,
     deleteWorkspaceMember,
     getWorkspaceMembers,
+    grantRoleWorkspaceMember,
     isWorkspaceMember,
 } from "@/lib/actions/member.action";
 import { RequestError } from "@/lib/http-error";
@@ -57,6 +59,91 @@ export const useIsWorkspaceMember = (
         },
     });
     return query;
+};
+
+export const useGrantRoleWorkspaceMember = (workspaceId: string) => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: async (data: GrantRoleWorkspaceMemberParams) => {
+            const response = await grantRoleWorkspaceMember(data);
+
+            if (!response.success) {
+                // Throw an error if the response indicates failure
+                const status = response?.status ?? 500;
+                const message =
+                    response?.error?.message || "Something went wrong";
+                throw new Error(`${status}: ${message}`);
+            }
+
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success("Successfully grant role to member!");
+
+            queryClient.invalidateQueries({
+                queryKey: ["members", { workspaceId }],
+            });
+        },
+        onError: (error: any) => {
+            const [status, errorMessage] = error.message.split(":");
+            ErrorToastMsg({
+                title: `Error ${status}`,
+                description:
+                    errorMessage ||
+                    "Something went wrong while editing workspace!",
+            });
+        },
+    });
+    return mutation;
+};
+
+export const useAddWorkspaceMember = (workspaceId: string) => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: async (data: AddWorkspaceMemberParams) => {
+            const response = await addWorkspaceMember(data);
+
+            if (!response.success) {
+                // Throw an error if the response indicates failure
+                const status = response?.status ?? 500;
+                const message =
+                    response?.error?.message || "Something went wrong";
+                throw new Error(`${status}: ${message}`);
+            }
+
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success("Successfully add a member!");
+
+            queryClient.invalidateQueries({
+                queryKey: ["workspaces"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["workspace", { id: workspaceId }],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["members", { workspaceId }],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["check-member", { workspaceId }],
+            });
+        },
+        onError: (error: any) => {
+            const [status, errorMessage] = error.message.split(":");
+            ErrorToastMsg({
+                title: `Error ${status}`,
+                description:
+                    errorMessage ||
+                    "Something went wrong while adding a member!",
+            });
+        },
+    });
+    return mutation;
 };
 
 export const useRemoveWorkspaceMember = (workspaceId: string) => {

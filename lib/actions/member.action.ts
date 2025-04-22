@@ -4,12 +4,13 @@ import { ActionResponse, ErrorResponse } from "@/types/server";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import {
+    AddWorkspaceMemberSchema,
     DeleteWorkspaceMemberSchema,
     GetWorkspaceMembersSchema,
     GrantRoleWorkspaceMemberSchema,
 } from "../validation/serverAction";
 import MemberModel from "../mongodb/models/member.model";
-import { NotFoundError } from "../http-error";
+import { InternalServerError, NotFoundError } from "../http-error";
 import mongoose from "mongoose";
 import { checkAdminRole } from "./queries.action";
 
@@ -53,6 +54,7 @@ export const getWorkspaceMembers = async (
                 $project: {
                     name: "$info.name",
                     image: "$info.image",
+                    email: "$info.email",
                     workspaceId: 1,
                     role: 1,
                     userId: 1,
@@ -68,6 +70,42 @@ export const getWorkspaceMembers = async (
         return {
             success: true,
             data: JSON.parse(JSON.stringify(members)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const addWorkspaceMember = async (
+    params: AddWorkspaceMemberParams
+): Promise<ActionResponse<Member>> => {
+    const validationResult = await action({
+        params,
+        schema: AddWorkspaceMemberSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { workspaceId, memberId } = validationResult.params!;
+
+    try {
+        const newMember = await MemberModel.create({
+            userId: memberId,
+            workspaceId,
+            role: "MEMBER",
+        });
+
+        if (!newMember) {
+            throw new InternalServerError("Failed to add a member");
+        }
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(newMember)),
             status: 200,
         };
     } catch (error) {
@@ -161,7 +199,7 @@ export const grantRoleWorkspaceMember = async (
         checkAdminRole(workspaceId, userId);
 
         const member = await MemberModel.findOneAndUpdate(
-            { userId: memberId },
+            { _id: memberId },
             {
                 role,
             },

@@ -42,6 +42,11 @@ interface GetWorkspaceMembersParams {
     workspaceId: string;
 }
 
+interface AddWorkspaceMemberParams {
+    workspaceId: string;
+    memberId: string;
+}
+
 interface DeleteWorkspaceMemberParams {
     workspaceId: string;
     memberId: string;

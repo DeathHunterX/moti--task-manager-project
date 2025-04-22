@@ -32,6 +32,11 @@ export const GetWorkspaceMembersSchema = z.object({
     workspaceId: z.string({ message: "Workspace Id is required!" }),
 });
 
+export const AddWorkspaceMemberSchema = z.object({
+    workspaceId: z.string({ message: "Workspace Id is required!" }),
+    memberId: z.string({ message: "Member Id is required!" }),
+});
+
 export const DeleteWorkspaceMemberSchema = GetWorkspaceMembersSchema.extend({
     memberId: z.string({ message: "Member Id is required!" }),
 });

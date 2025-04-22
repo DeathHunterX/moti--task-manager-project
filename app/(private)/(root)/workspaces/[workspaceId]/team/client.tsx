@@ -1,10 +1,6 @@
 "use client";
-
-import {
-    useGetWorkspaceMembers,
-    useRemoveWorkspaceMember,
-} from "@/hooks/actions/useMembers";
-import { useParams } from "next/navigation";
+import Image from "next/image";
+import { MoreVerticalIcon } from "lucide-react";
 
 import {
     Table,
@@ -15,39 +11,63 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import PageLoader from "@/components/shared/PageLoader";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash } from "lucide-react";
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import PageLoader from "@/components/shared/PageLoader";
+
+import {
+    useGetWorkspaceMembers,
+    useGrantRoleWorkspaceMember,
+    useRemoveWorkspaceMember,
+} from "@/hooks/actions/useMembers";
+
 import { useConfirm } from "@/hooks/use-confirm";
+import { useWorkspaceId } from "@/hooks/use-params";
+import { MemberRoleDict } from "@/constants";
+import InviteMemberModal from "@/components/features/members/InviteMemberModal";
 
 const WorkspaceTeamClient = () => {
-    const { workspaceId } = useParams();
-    const { data, isPending } = useGetWorkspaceMembers(workspaceId as string, {
+    const workspaceId = useWorkspaceId();
+    const { data, isLoading } = useGetWorkspaceMembers(workspaceId, {
         enabled: !!workspaceId,
     });
-
-    const { mutate: removeWorkspaceMemberMutate, isPending: isRemoveMember } =
-        useRemoveWorkspaceMember(workspaceId as string);
 
     const [RemoveDialog, confirmRemove] = useConfirm(
         "Remove Member from Workspace?",
         "Are you sure you want to remove this member from the workspace? They will lose access to all workspace resources and data."
     );
 
+    const { mutate: removeWorkspaceMember, isPending: isRemovingMember } =
+        useRemoveWorkspaceMember(workspaceId);
+
+    const { mutate: grantRoleMember, isPending: isGrantingRoleMember } =
+        useGrantRoleWorkspaceMember(workspaceId);
+
+    const isPending = isGrantingRoleMember || isRemovingMember;
+
+    const handleGrantRoleMember = (memberId: string, role: MemberRoleType) => {
+        grantRoleMember({ workspaceId, role, memberId });
+    };
+
     const handleRemoveMember = async (memberId: string) => {
         const ok = await confirmRemove();
 
         if (!ok) return;
 
-        removeWorkspaceMemberMutate({
+        removeWorkspaceMember({
             workspaceId: workspaceId as string,
             memberId: memberId,
         });
     };
 
-    if (isPending) {
+    if (isLoading) {
         return <PageLoader />;
     }
 
@@ -55,7 +75,10 @@ const WorkspaceTeamClient = () => {
         <div className="flex flex-col gap-y-4 w-full">
             <RemoveDialog />
 
-            <h1 className="ms-3 text-xl text-[#172B4D]">Teams</h1>
+            <div className="flex flex-row justify-between items-center">
+                <h1 className="ms-3 text-xl text-[#172B4D]">Teams</h1>
+                <InviteMemberModal />
+            </div>
             <div className="flex justify-center w-full">
                 <div className="max-w-[80rem] w-full">
                     <Table className="w-full">
@@ -79,7 +102,7 @@ const WorkspaceTeamClient = () => {
                                     Name
                                 </TableHead>
                                 <TableHead>Role</TableHead>
-
+                                <TableHead>Email</TableHead>
                                 <TableHead className="w-[100px] text-center">
                                     Actions
                                 </TableHead>
@@ -87,49 +110,102 @@ const WorkspaceTeamClient = () => {
                         </TableHeader>
                         <TableBody>
                             {(data ?? []).length > 0 ? (
-                                (data ?? []).map((item) => (
-                                    <TableRow key={item?._id}>
+                                (data ?? []).map((member) => (
+                                    <TableRow key={member?._id}>
+                                        {/* Name */}
                                         <TableCell className="py-3 flex flex-row gap-x-3 items-center font-medium">
                                             <Avatar className="size-8">
                                                 <AvatarImage
                                                     src={
-                                                        typeof item.image ===
+                                                        typeof member.image ===
                                                         "string"
-                                                            ? item.image
-                                                            : item.image
+                                                            ? member.image
+                                                            : member.image
                                                             ? URL.createObjectURL(
-                                                                  item.image
+                                                                  member.image
                                                               )
                                                             : ""
                                                     }
-                                                    alt={item.name ?? ""}
+                                                    alt={member.name ?? ""}
                                                 />
                                                 <AvatarFallback>
-                                                    {item.name?.[0]}
+                                                    {member.name?.[0]}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            {item.name}
+                                            {member.name}
                                         </TableCell>
+
+                                        {/* Role */}
                                         <TableCell className="py-3">
-                                            {item.role}
+                                            {member.role}
                                         </TableCell>
+
+                                        {/* Email */}
+
                                         <TableCell className="py-3">
-                                            <div className="flex flex-row gap-x-1 justify-center">
-                                                <Button size="sm">
-                                                    <Pencil />
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-rose-500 hover:bg-rose-600"
-                                                    onClick={() =>
-                                                        handleRemoveMember(
-                                                            item.userId
-                                                        )
-                                                    }
+                                            <span className="line-clamp-1">
+                                                {member.email}
+                                            </span>
+                                        </TableCell>
+
+                                        {/* Action */}
+                                        <TableCell className="py-3">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger
+                                                    asChild
+                                                    className="flex mx-auto"
                                                 >
-                                                    <Trash />
-                                                </Button>
-                                            </div>
+                                                    <MoreVerticalIcon className="size-4 text-muted-foreground" />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent
+                                                    side="bottom"
+                                                    align="end"
+                                                >
+                                                    <DropdownMenuItem
+                                                        className="font-medium"
+                                                        onClick={() =>
+                                                            handleGrantRoleMember(
+                                                                member._id,
+                                                                MemberRoleDict.ADMIN as MemberRoleType
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isPending ||
+                                                            member.role ===
+                                                                "ADMIN"
+                                                        }
+                                                    >
+                                                        Set as Administrator
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="font-medium"
+                                                        onClick={() =>
+                                                            handleGrantRoleMember(
+                                                                member._id,
+                                                                MemberRoleDict.MEMBER as MemberRoleType
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isPending ||
+                                                            member.role ===
+                                                                "MEMBER"
+                                                        }
+                                                    >
+                                                        Set as Member
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="font-medium text-amber-700"
+                                                        onClick={() =>
+                                                            handleRemoveMember(
+                                                                member.userId
+                                                            )
+                                                        }
+                                                        disabled={isPending}
+                                                    >
+                                                        Remove {member.name}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
                                 ))
