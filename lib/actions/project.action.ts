@@ -5,6 +5,7 @@ import handleError from "../handlers/error";
 import action from "../handlers/action";
 import {
     CreateProjectServerSchema,
+    DeleteProjectByIdSchema,
     EditProjectByIdSchema,
     GetAllProjectsSchema,
     GetProjectByIdSchema,
@@ -13,8 +14,10 @@ import ProjectModel from "../mongodb/models/project.model";
 import { InternalServerError, NotFoundError } from "../http-error";
 import mongoose from "mongoose";
 import { deleteImage, uploadImage } from "./image.action";
-import { revalidatePath } from "next/cache";
+
 import { getCloudinaryPublicId } from "../utils";
+import { checkMembers } from "./queries.action";
+import TaskModel from "../mongodb/models/task.model";
 
 export const getAllProjects = async (
     params: GetAllProjectsParams
@@ -123,8 +126,6 @@ export const createProject = async (
 
         // *End transaction
         await session.commitTransaction();
-
-        revalidatePath("/workspaces/:id");
 
         return {
             success: true,
@@ -236,14 +237,87 @@ export const editProject = async (
             { session, new: true }
         );
 
+        if (!editedProject) {
+            throw new InternalServerError("Failed to edit project!");
+        }
+
         // *End transaction
         await session.commitTransaction();
-
-        revalidatePath("/workspaces/:id/projects/:id");
 
         return {
             success: true,
             data: JSON.parse(JSON.stringify(editedProject)),
+            status: 200,
+        };
+    } catch (error) {
+        return handleError(error) as ErrorResponse;
+    }
+};
+
+export const deleteProject = async (
+    params: DeleteProjectParams
+): Promise<ActionResponse<Project>> => {
+    const validationResult = await action({
+        params,
+        schema: DeleteProjectByIdSchema,
+        authorize: true,
+    });
+
+    if (validationResult instanceof Error) {
+        return handleError(validationResult) as ErrorResponse;
+    }
+
+    const { workspaceId, projectId } = validationResult.params!;
+
+    const userId = validationResult.session?.user.id!;
+
+    const session = await mongoose.startSession();
+    await session.startTransaction();
+
+    try {
+        await checkMembers(workspaceId, userId);
+
+        const project = await ProjectModel.findOneAndDelete(
+            {
+                _id: projectId,
+                workspaceId: workspaceId,
+            },
+            { session }
+        );
+
+        if (!project) {
+            throw new NotFoundError("Failed to remove a project!");
+        }
+
+        const tasks = await TaskModel.deleteMany(
+            {
+                projectId: project._id,
+            },
+            { session }
+        );
+
+        if (!tasks) {
+            throw new NotFoundError("Failed to remove tasks!");
+        }
+
+        // Delete the image if it exists
+        if (project.image) {
+            const deleteImg = await deleteImage({
+                params: {
+                    public_id: getCloudinaryPublicId(project.image as string),
+                },
+            });
+            if (!deleteImg.success) {
+                throw new InternalServerError("Failed to delete image!");
+            }
+        }
+
+        // *End transaction
+        await session.commitTransaction();
+
+        return {
+            success: true,
+            data: JSON.parse(JSON.stringify(project)),
             status: 200,
         };
     } catch (error) {

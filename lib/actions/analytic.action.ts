@@ -65,12 +65,12 @@ export const getProjectAnalytics = async (
         const getStats = async (match: Record<string, any>) => {
             const thisMonth = await getCount({
                 ...match,
-                created_at: { $gte: thisMonthStart, $lte: thisMonthEnd },
+                createdAt: { $gte: thisMonthStart, $lte: thisMonthEnd },
             });
 
             const lastMonth = await getCount({
                 ...match,
-                created_at: { $gte: lastMonthStart, $lte: lastMonthEnd },
+                createdAt: { $gte: lastMonthStart, $lte: lastMonthEnd },
             });
 
             return {
@@ -168,12 +168,12 @@ export const getWorkspaceAnalytics = async (
         const getStats = async (match: Record<string, any>) => {
             const thisMonth = await getCount({
                 ...match,
-                created_at: { $gte: thisMonthStart, $lte: thisMonthEnd },
+                createdAt: { $gte: thisMonthStart, $lte: thisMonthEnd },
             });
 
             const lastMonth = await getCount({
                 ...match,
-                created_at: { $gte: lastMonthStart, $lte: lastMonthEnd },
+                createdAt: { $gte: lastMonthStart, $lte: lastMonthEnd },
             });
 
             return {

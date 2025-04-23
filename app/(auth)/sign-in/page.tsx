@@ -6,9 +6,9 @@ import { SignInSchema } from "@/lib/validation/auth";
 import { signInWithCredentials } from "@/lib/actions/auth/signIn.action";
 import { Metadata } from "next";
 
-// export const metadata: Metadata = {
-//     title: "Sign In",
-// };
+export const metadata: Metadata = {
+    title: "Sign In",
+};
 
 const SignInPage = () => {
     return (

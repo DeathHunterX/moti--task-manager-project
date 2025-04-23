@@ -1,4 +1,11 @@
 "use client";
+import Link from "next/link";
+import { CalendarIcon, PlusIcon, SettingsIcon } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 import Analytics from "@/components/shared/analytics/Analytics";
 import { MemberAvatar } from "@/components/shared/avatar/MemberAvatar";
@@ -6,18 +13,14 @@ import ProjectAvatar from "@/components/shared/avatar/ProjectAvatar";
 import PageError from "@/components/shared/PageError";
 import PageLoader from "@/components/shared/PageLoader";
 import TaskSheet from "@/components/shared/sheet/TaskSheet";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+
+import { useFormModal } from "@/hooks/use-form-modal";
+import { useWorkspaceId } from "@/hooks/use-params";
+
 import { useGetWorkspaceAnalytics } from "@/hooks/actions/useAnalytics";
 import { useGetWorkspaceMembers } from "@/hooks/actions/useMembers";
 import { useGetProjects } from "@/hooks/actions/useProjects";
 import { useGetTasks } from "@/hooks/actions/useTasks";
-import { useFormModal } from "@/hooks/use-form-modal";
-import { useWorkspaceId } from "@/hooks/use-params";
-import { formatDistanceToNow } from "date-fns";
-import { CalendarIcon, PlusIcon, SettingsIcon } from "lucide-react";
-import Link from "next/link";
 
 const WorkspaceByIdClient = () => {
     const workspaceId = useWorkspaceId();
@@ -69,7 +72,7 @@ export const TaskList = ({ data, total }: TaskListProps) => {
 
     const handleOpenCreateProject = () => {
         setActionType("create");
-        setFormType("project");
+        setFormType("task");
         onOpen();
     };
 
@@ -91,8 +94,8 @@ export const TaskList = ({ data, total }: TaskListProps) => {
                     {data
                         .sort((a, b) => {
                             return (
-                                new Date(b.created_at || 0).getTime() -
-                                new Date(a.created_at || 0).getTime()
+                                new Date(a.dueDate || 0).getTime() -
+                                new Date(b.dueDate || 0).getTime()
                             );
                         })
                         .slice(0, 6)

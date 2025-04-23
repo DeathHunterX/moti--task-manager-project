@@ -10,7 +10,7 @@ export const useGetProjectAnalytics = (
     options?: { enabled?: boolean }
 ) => {
     const query = useQuery({
-        queryKey: ["project-analytics", { projectId }],
+        queryKey: ["project-analytics"],
         enabled: options?.enabled ?? !!projectId,
         queryFn: async () => {
             const response = await getProjectAnalytics({ projectId });
@@ -36,7 +36,7 @@ export const useGetWorkspaceAnalytics = (
     options?: { enabled?: boolean }
 ) => {
     const query = useQuery({
-        queryKey: ["workspace-analytics", { workspaceId }],
+        queryKey: ["workspace-analytics"],
         enabled: options?.enabled ?? !!workspaceId,
         queryFn: async () => {
             const response = await getWorkspaceAnalytics({ workspaceId });

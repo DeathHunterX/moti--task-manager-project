@@ -52,9 +52,6 @@ const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
         initialData?._id || ""
     );
 
-    const isSubmittedPending = isCreatePending || isEditPending;
-
-    // 1. Define your form.
     const form = useForm<z.infer<typeof CreateTaskSchema>>({
         resolver: zodResolver(CreateTaskSchema),
         defaultValues: {
@@ -78,14 +75,6 @@ const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
         },
     });
 
-    const handleCancelForm = () => {
-        form.reset();
-        onCancel?.();
-    };
-
-    const isPending = isCreatePending;
-
-    // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof CreateTaskSchema>) {
         if (actionType === "update") {
             editTaskMutation(
@@ -123,6 +112,13 @@ const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
         }
     }
 
+    const handleCancelForm = () => {
+        form.reset();
+        onCancel?.();
+    };
+
+    const isPending = isCreatePending || isEditPending;
+
     const buttonText = actionType === "create" ? "Create task" : "Save changes";
 
     return (
@@ -131,12 +127,21 @@ const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8 my-5"
             >
-                <InputField nameInSchema="name" label="Task Name" />
-                <DatePickerField nameInSchema="dueDate" label="Due Date" />
+                <InputField
+                    nameInSchema="name"
+                    label="Task Name"
+                    disabled={isPending}
+                />
+                <DatePickerField
+                    nameInSchema="dueDate"
+                    label="Due Date"
+                    disabled={isPending}
+                />
                 <SelectInputField
                     nameInSchema="assigneeId"
                     label="Assignee"
                     placeholder="Select assignee"
+                    disabled={isPending}
                     isLoading={isLoadingMembers}
                     data={memberOptions || []}
                 />
@@ -144,6 +149,7 @@ const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
                     nameInSchema="status"
                     label="Status"
                     placeholder="Select status"
+                    disabled={isPending}
                     isLoading={isLoadingMembers}
                     data={statusOptions}
                 />
@@ -152,16 +158,18 @@ const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
                     nameInSchema="projectId"
                     label="Project"
                     placeholder="Select project"
+                    disabled={isPending}
                     isLoading={isLoadingProjects}
-                    hasAvatar
                     data={projectOptions || []}
+                    hasAvatar
                 />
 
                 <div className="flex flex-rows justify-between gap-4">
                     <Button
-                        className="px-5 py-3"
-                        variant="outline"
                         type="button"
+                        variant="outline"
+                        className="px-5 py-3"
+                        disabled={isPending}
                         onClick={handleCancelForm}
                     >
                         Cancel
@@ -169,7 +177,7 @@ const TaskForm = ({ onCancel, actionType, initialData }: ProjectFormProps) => {
                     <Button
                         type="submit"
                         className="px-5 py-3 bg-blue-600 hover:bg-blue-700"
-                        disabled={isSubmittedPending}
+                        disabled={isPending}
                     >
                         {buttonText}
                     </Button>

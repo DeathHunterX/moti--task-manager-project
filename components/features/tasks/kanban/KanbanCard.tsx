@@ -11,6 +11,7 @@ interface KanbanCardProps {
 }
 
 const KanbanCard = ({ task }: KanbanCardProps) => {
+    console.log(task);
     return (
         <div className="bg-white p-2.5 mb-1.5 rounded shadow-sm space-y-3">
             <div className="flex items-start justify-between gap-x-2">
@@ -24,7 +25,7 @@ const KanbanCard = ({ task }: KanbanCardProps) => {
 
             <div className="flex items-center gap-x-1.5">
                 <MemberAvatar
-                    name={task.assignee.name}
+                    name={task.assignee?.name as string}
                     fallbackClassName="text-[10px]"
                 />
                 <div className="size-1 rounded-full bg-neutral-300" />
@@ -37,7 +38,6 @@ const KanbanCard = ({ task }: KanbanCardProps) => {
                 <ProjectAvatar
                     name={task.project?.name as string}
                     image={task.project?.image}
-                    fallbackClassName="text-[10px]"
                 />
                 <span className="text-xs font-medium">
                     {task.project?.name}

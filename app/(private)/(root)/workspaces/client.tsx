@@ -3,14 +3,12 @@
 import { Button } from "@/components/ui/button";
 
 import { useFormModal } from "@/hooks/use-form-modal";
-import WorkspaceTable from "./_components/WorkspaceTable";
+import WorkspaceTable from "@/components/features/workspaces/WorkspaceTable";
+import { useGetWorkspaces } from "@/hooks/actions/useWorkspaces";
 
-interface WorkspacesClientProps {
-    workspaces: Workspace[];
-}
-
-const WorkspacesClient: React.FC<WorkspacesClientProps> = ({ workspaces }) => {
+const WorkspacesClient = () => {
     const { onOpen, setFormType, setActionType } = useFormModal();
+    const { data: workspaces } = useGetWorkspaces();
 
     const handleOpenCreateWorkspaceForm = () => {
         setFormType("workspace");
@@ -30,7 +28,7 @@ const WorkspacesClient: React.FC<WorkspacesClientProps> = ({ workspaces }) => {
                 </Button>
             </div>
             <div className="">
-                <WorkspaceTable data={workspaces} />
+                <WorkspaceTable data={workspaces || []} />
             </div>
         </>
     );

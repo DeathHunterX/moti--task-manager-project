@@ -23,6 +23,7 @@ type SelectInputFieldProps<S extends FieldValues> = {
     label: string;
     placeholder?: string;
     className?: string;
+    disabled?: boolean;
     isLoading: boolean;
     hasAvatar?: boolean;
     data: { name: string; value: string; image?: string }[];
@@ -33,6 +34,7 @@ const SelectInputField = <S extends FieldValues>({
     label,
     placeholder,
     className = "",
+    disabled = false,
     isLoading,
     hasAvatar = false,
     data,
@@ -55,7 +57,11 @@ const SelectInputField = <S extends FieldValues>({
                     {isLoading ? (
                         <Skeleton className="w-full h-9 rounded-md" />
                     ) : (
-                        <Select {...field} onValueChange={field.onChange}>
+                        <Select
+                            {...field}
+                            onValueChange={field.onChange}
+                            disabled={disabled}
+                        >
                             <FormControl>
                                 <SelectTrigger
                                     id={nameInSchema as Path<S>}

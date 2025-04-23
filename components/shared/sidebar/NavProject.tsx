@@ -33,7 +33,7 @@ export function NavProject() {
             <div className="flex flex-row justify-between pb-2">
                 <small className=" text-gray-500 px-2">Projects</small>
                 <span
-                    className="text-xs text-gray-500 px-2"
+                    className="text-xs text-gray-500 px-2 cursor-pointer"
                     onClick={handleOpenProjectForm}
                 >
                     <CirclePlus size={14} />

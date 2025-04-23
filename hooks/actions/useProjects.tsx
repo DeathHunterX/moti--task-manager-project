@@ -1,6 +1,7 @@
 import { ErrorToastMsg } from "@/components/shared/Toast";
 import {
     createProject,
+    deleteProject,
     editProject,
     getAllProjects,
     getProjectById,
@@ -80,9 +81,9 @@ export const useCreateProject = () => {
                 throw new Error(`${status}: ${message}`);
             }
 
-            return response.data;
+            return response.data as Project;
         },
-        onSuccess: () => {
+        onSuccess: (data: Project) => {
             toast.success("Successfully create a project!");
 
             queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -141,4 +142,51 @@ export const useEditProject = (projectId: string) => {
     return mutation;
 };
 
-// TODO: Delete project
+export const useDeleteProject = ({
+    workspaceId,
+    projectId,
+}: {
+    workspaceId: string;
+    projectId: string;
+}) => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: async (data: DeleteProjectParams) => {
+            const response = await deleteProject(data);
+
+            if (!response.success) {
+                // Throw an error if the response indicates failure
+                const status = response?.status ?? 500;
+                const message =
+                    response?.error?.message || "Something went wrong";
+                throw new Error(`${status}: ${message}`);
+            }
+
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success("Successfully delete project!");
+
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+
+            queryClient.invalidateQueries({
+                queryKey: ["tasks"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["workspace-analytics"],
+            });
+        },
+        onError: (error: any) => {
+            const [status, errorMessage] = error.message.split(":");
+            ErrorToastMsg({
+                title: `Error ${status}`,
+                description:
+                    errorMessage ||
+                    "Something went wrong while deleting project!",
+            });
+        },
+    });
+    return mutation;
+};

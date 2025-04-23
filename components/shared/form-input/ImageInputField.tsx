@@ -13,13 +13,14 @@ type InputFieldProps<S extends FieldValues> = {
     nameInSchema: keyof S;
     label: string;
     className?: string;
+    disabled?: boolean;
 } & InputHTMLAttributes<HTMLInputElement>;
 
 const ImageInputField = <S extends FieldValues>({
     nameInSchema,
     label,
     className = "",
-    ...props
+    disabled = false,
 }: InputFieldProps<S>) => {
     const form = useFormContext<S>();
     const inputRef = useRef<HTMLInputElement>(null);
@@ -75,13 +76,13 @@ const ImageInputField = <S extends FieldValues>({
                                 accept=".jpg, .png, .jpeg, .svg"
                                 ref={inputRef}
                                 onChange={handleImageChange}
-                                disabled={form.formState.isSubmitting}
+                                disabled={disabled}
                             />
                             {field.value ? (
                                 <Button
                                     variant="destructive"
                                     type="button"
-                                    disabled={form.formState.isSubmitting}
+                                    disabled={disabled}
                                     size="sm"
                                     className="w-fit mt-2"
                                     onClick={() => {
@@ -97,7 +98,7 @@ const ImageInputField = <S extends FieldValues>({
                                 <Button
                                     variant="teritary"
                                     type="button"
-                                    disabled={form.formState.isSubmitting}
+                                    disabled={disabled}
                                     size="sm"
                                     className="w-fit mt-2"
                                     onClick={() => inputRef.current?.click()}

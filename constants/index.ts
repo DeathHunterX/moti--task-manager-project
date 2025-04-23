@@ -5,6 +5,8 @@ import {
     UsersIcon,
 } from "lucide-react";
 
+export const motiBaseUrl = process.env.NEXT_BASE_URL || "http://localhost:3000";
+
 export const publicNavBarMap = [
     {
         title: "Feature",

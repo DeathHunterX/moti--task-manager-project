@@ -1,4 +1,4 @@
-import TaskDate from "@/app/(private)/(root)/workspaces/[workspaceId]/projects/[projectId]/_components/table/TaskDate";
+import TaskDate from "@/components/features/tasks/table/TaskDate";
 import { MemberAvatar } from "@/components/shared/avatar/MemberAvatar";
 import OverviewProperty from "@/components/shared/OverviewProperty";
 import { Badge } from "@/components/ui/badge";

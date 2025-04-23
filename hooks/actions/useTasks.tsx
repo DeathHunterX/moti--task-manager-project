@@ -36,6 +36,9 @@ export const useCreateTask = () => {
 
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            queryClient.invalidateQueries({
+                queryKey: ["workspace-analytics"],
+            });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");
@@ -200,6 +203,9 @@ export const useDeleteTask = () => {
 
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            queryClient.invalidateQueries({
+                queryKey: ["workspace-analytics"],
+            });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");
@@ -235,6 +241,9 @@ export const useBulkUpdateTasks = () => {
 
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            queryClient.invalidateQueries({
+                queryKey: ["workspace-analytics"],
+            });
         },
         onError: (error: any) => {
             const [status, errorMessage] = error.message.split(":");

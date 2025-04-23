@@ -29,29 +29,33 @@ const RecentSection = ({
                         <div className="grid-cols-6" key={card._id}>
                             <div className="border rounded-md p-3">
                                 <Link
-                                    href={`workspaces/${card._id}`}
-                                    className=""
+                                    href={`/workspaces/${card._id}`}
+                                    className="flex flex-col gap-y-2 items-center hover:underline"
                                 >
-                                    <div className="flex flex-row gap-3">
-                                        <Image
-                                            src={
-                                                typeof card.image === "string"
-                                                    ? card.image
-                                                    : card.image
-                                                    ? URL.createObjectURL(
-                                                          card.image
-                                                      )
-                                                    : ""
-                                            }
-                                            width={150}
-                                            height={150}
-                                            alt={`${card.name} image`}
-                                            className="rounded-md"
-                                        />
-                                        <h3 className="font-semibold text-lg">
-                                            {card.name}
-                                        </h3>
-                                    </div>
+                                    {(card.image as string).trim() !== "" ? (
+                                        <div className="size-[125px] relative">
+                                            <Image
+                                                src={
+                                                    typeof card.image ===
+                                                    "string"
+                                                        ? card.image
+                                                        : card.image
+                                                        ? URL.createObjectURL(
+                                                              card.image
+                                                          )
+                                                        : ""
+                                                }
+                                                fill
+                                                alt={`${card.name} image`}
+                                                className="rounded-md object-cover"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="size-[125px] bg-gradient-to-bl from-violet-500 to-fuchsia-500 rounded-md" />
+                                    )}
+                                    <p className="font-semibold text-lg">
+                                        {card.name}
+                                    </p>
                                 </Link>
                             </div>
                         </div>

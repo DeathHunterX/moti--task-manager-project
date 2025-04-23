@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import YourWorkClient from "./client";
+
+export const metadata: Metadata = {
+    title: "Your Work",
+};
 
 const YourWorkPage = () => {
     return (

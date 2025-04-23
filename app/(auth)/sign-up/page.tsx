@@ -6,9 +6,9 @@ import { SignUpSchema } from "@/lib/validation/auth";
 import { signUpWithCredentials } from "@/lib/actions/auth/signUp.action";
 import { Metadata } from "next";
 
-// export const metadata: Metadata = {
-//     title: "Sign Up",
-// };
+export const metadata: Metadata = {
+    title: "Sign Up",
+};
 
 const SignUpPage = () => {
     return (

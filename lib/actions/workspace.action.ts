@@ -26,7 +26,6 @@ import {
 } from "../http-error";
 
 import { generateInviteCode, getCloudinaryPublicId } from "../utils";
-import { revalidatePath } from "next/cache";
 import { deleteImage, uploadImage } from "./image.action";
 import { checkAdminRole, checkMembers } from "./queries.action";
 import TaskModel from "../mongodb/models/task.model";
@@ -92,9 +91,6 @@ export const createWorkspace = async (
         // *End transaction
         await session.commitTransaction();
 
-        revalidatePath("/workspaces");
-        revalidatePath("/your-work");
-
         return {
             success: true,
             data: JSON.parse(JSON.stringify(newWorkspace)),
@@ -126,8 +122,6 @@ export const getAllWorkspaces = async (
 
     const filterQuery: FilterQuery<typeof WorkspaceModel> = {};
 
-    const objectUserId = new mongoose.Types.ObjectId(userId!);
-
     try {
         const pipeline: any[] = [
             {
@@ -139,11 +133,38 @@ export const getAllWorkspaces = async (
                 },
             },
             {
-                $unwind: "$memberInfo", // ← Flatten the memberInfo array
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userInfo",
+                },
             },
             {
+                $unwind: "$memberInfo",
+            },
+            {
+                $unwind: {
+                    path: "$userInfo",
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    image: 1,
+                    inviteCode: 1,
+                    userId: 1,
+                    workspaceCreator: "$userInfo.name",
+                    createdAt: 1,
+                    updatedAt: 1,
+                    memberInfo: 1,
+                },
+            },
+
+            {
                 $match: {
-                    "memberInfo.userId": objectUserId,
+                    "memberInfo.userId": new mongoose.Types.ObjectId(userId!),
                     "memberInfo.role": { $in: ["MEMBER", "ADMIN"] },
                 },
             },
@@ -360,9 +381,6 @@ export const editWorkspace = async (
         // *End transaction
         await session.commitTransaction();
 
-        revalidatePath("/workspaces");
-        revalidatePath("/workspaces/:id");
-
         return {
             success: true,
             data: JSON.parse(JSON.stringify(editedWorkspace)),
@@ -404,6 +422,10 @@ export const deleteWorkspace = async (
             { session }
         );
 
+        if (!workspace) {
+            throw new NotFoundError("Workspace not found!");
+        }
+
         const task = await TaskModel.deleteMany(
             {
                 workspaceId: workspaceId,
@@ -437,10 +459,19 @@ export const deleteWorkspace = async (
             throw new NotFoundError("Failed to delete members");
         }
 
-        await session.commitTransaction();
+        // Check if the workspace has an image and delete it
+        if (workspace.image) {
+            const deleteImg = await deleteImage({
+                params: {
+                    public_id: getCloudinaryPublicId(workspace.image as string),
+                },
+            });
+            if (!deleteImg.success) {
+                throw new InternalServerError("Failed to delete image!");
+            }
+        }
 
-        revalidatePath("/workspaces");
-        revalidatePath("/your-work");
+        await session.commitTransaction();
 
         return {
             success: true,
@@ -477,8 +508,6 @@ export const resetInviteCode = async (
                 inviteCode: generateInviteCode(6),
             }
         );
-
-        revalidatePath("/workspaces/:id");
 
         return {
             success: true,

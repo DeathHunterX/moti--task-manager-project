@@ -1,5 +1,9 @@
-import TaskViewSwitcher from "../projects/[projectId]/_components/TaskViewSwitcher";
+import TaskViewSwitcher from "../../../../../../components/features/tasks/TaskViewSwitcher";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Tasks",
+};
 const TasksPage = () => {
     return (
         <div className="flex flex-col gap-y-4">

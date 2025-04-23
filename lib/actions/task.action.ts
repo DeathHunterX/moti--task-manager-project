@@ -217,7 +217,7 @@ export const getTaskById = async (
                         role: "$assigneeSec.role",
                     },
                     assigneeId: 1,
-                    created_at: 1,
+                    createdAt: 1,
                     description: 1,
                     dueDate: 1,
                     name: 1,

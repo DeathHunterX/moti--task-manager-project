@@ -37,7 +37,7 @@ const ResponsiveModal = ({
     if (isMobile) {
         return (
             <Drawer open={open} onOpenChange={onOpenChange}>
-                <DrawerContent className="px-8">
+                <DrawerContent className="p-8 pt-0 lg:min-w-[40vw] lg:max-w-md">
                     <DrawerHeader>
                         <DrawerTitle>{title}</DrawerTitle>
                         <DrawerDescription>{description}</DrawerDescription>

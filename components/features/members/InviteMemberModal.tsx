@@ -1,10 +1,13 @@
 "use client";
+
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { CopyIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
+import { Separator } from "@/components/ui/separator";
 import ResponsiveModal from "@/components/shared/ResponsiveModal";
-
 import InviteResult from "./InviteResult";
 
 import { useWorkspaceId } from "@/hooks/use-params";
@@ -13,12 +16,15 @@ import {
     useResetWorkspaceInviteCode,
 } from "@/hooks/actions/useWorkspaces";
 import { useConfirm } from "@/hooks/use-confirm";
-import { toast } from "react-toastify";
-import { CopyIcon } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 const InviteMemberModal = () => {
     const workspaceId = useWorkspaceId();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [isSearchMember, setIsSearchMember] = useState(false);
+    const [fullInviteLink, setFullInviteLink] = useState("");
 
     const [ResetDialog, confirmReset] = useConfirm(
         "Reset Invite Link",
@@ -26,16 +32,7 @@ const InviteMemberModal = () => {
         "destructive"
     );
 
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-    const [search, setSearch] = useState<string>("");
-    const [debouncedSearch, setDebouncedSearch] = useState<string>("");
-
-    const [isSearchMember, setIsSearchMember] = useState<boolean>(false);
-
-    const [fullInviteLink, setFullInviteLink] = useState<string>("");
-
-    const { data, isPending } = useGetWorkspace(workspaceId as string, {
+    const { data } = useGetWorkspace(workspaceId as string, {
         enabled: !!workspaceId,
     });
 
@@ -43,14 +40,6 @@ const InviteMemberModal = () => {
         mutate: resetWorkspaceInviteCode,
         isPending: isResetingWorkspaceInviteCode,
     } = useResetWorkspaceInviteCode();
-
-    const handleResetInviteCode = async () => {
-        const ok = await confirmReset();
-
-        if (!ok) return;
-
-        resetWorkspaceInviteCode({ workspaceId: data?._id as string });
-    };
 
     useEffect(() => {
         if (data?._id && data?.inviteCode) {
@@ -60,6 +49,13 @@ const InviteMemberModal = () => {
         }
     }, [data]);
 
+    const handleResetInviteCode = async () => {
+        const ok = await confirmReset();
+        if (!ok) return;
+
+        resetWorkspaceInviteCode({ workspaceId: data?._id as string });
+    };
+
     const handleCopyInviteLink = () => {
         navigator.clipboard
             .writeText(fullInviteLink)
@@ -67,83 +63,85 @@ const InviteMemberModal = () => {
     };
 
     useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            setDebouncedSearch(search); // Update the debounced search value
-        }, 3000); // 1s delay
+        const delay = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 1500);
 
-        return () => clearTimeout(delayDebounceFn); // Cleanup timeout
+        return () => clearTimeout(delay);
     }, [search]);
 
+    const handleInputChange = (value: string) => {
+        setSearch(value);
+        setIsSearchMember(value !== "");
+    };
+
     return (
-        <div className="">
+        <div>
             <Button
                 size="default"
                 variant="teritary"
-                onClick={() => setIsModalOpen(!isModalOpen)}
+                onClick={() => setIsModalOpen((prev) => !prev)}
             >
                 Invite member
             </Button>
+
             <ResponsiveModal
                 open={isModalOpen}
-                onOpenChange={() => setIsModalOpen((prevState) => !prevState)}
+                onOpenChange={() => setIsModalOpen((prev) => !prev)}
                 title="Add New Members"
                 description="Invite teammates by searching for their name or email, or create an invite link anyone can use to join your workspace."
             >
                 <div className="flex flex-col gap-y-6 pb-2">
                     <ResetDialog />
+
+                    {/* Search & Invite Result */}
                     <div className="relative w-full">
-                        <div className="">
-                            <Input
-                                type="text"
-                                placeholder="Invite member by email..."
-                                value={search}
-                                onChange={(e) => {
-                                    setSearch(e.target.value);
-
-                                    if (!isSearchMember)
-                                        setIsSearchMember(true);
-
-                                    if (e.target.value === "" && isSearchMember)
-                                        setIsSearchMember(false);
-                                }}
-                                className=""
-                            />
-                        </div>
+                        <Input
+                            type="text"
+                            placeholder="Invite member by email..."
+                            value={search}
+                            onChange={(e) => handleInputChange(e.target.value)}
+                            onFocus={() =>
+                                !isSearchMember && setIsSearchMember(true)
+                            }
+                        />
                         {isSearchMember && (
-                            <InviteResult search={debouncedSearch} />
+                            <InviteResult
+                                search={debouncedSearch}
+                                onClose={() => setIsSearchMember(false)}
+                            />
                         )}
                     </div>
 
+                    {/* Invite Link Section */}
                     <div className="relative">
                         <Separator className="my-2" />
-                        <div className="bg-white p-2 absolute -top-3.5 left-2">
+                        <div className="absolute -top-3.5 left-2 bg-white p-2">
                             <span className="text-xs text-gray-500">
                                 Don't see them? Send them the link!
                             </span>
                         </div>
                     </div>
-                    <div className="">
-                        <div className="">
-                            <div className="flex flex-row items-center gap-x-2">
-                                <Input disabled value={fullInviteLink} />
-                                <Button
-                                    onClick={handleCopyInviteLink}
-                                    variant="secondary"
-                                    size="sm"
-                                >
-                                    <CopyIcon />
-                                </Button>
-                                <Button
-                                    className="w-fit items-"
-                                    size="sm"
-                                    variant="destructive"
-                                    type="button"
-                                    disabled={isResetingWorkspaceInviteCode}
-                                    onClick={handleResetInviteCode}
-                                >
-                                    Reset Invite Link
-                                </Button>
-                            </div>
+
+                    <div>
+                        <div className="flex items-center gap-x-2">
+                            <Input disabled value={fullInviteLink} />
+                            <Button
+                                onClick={handleCopyInviteLink}
+                                variant="secondary"
+                                size="sm"
+                            >
+                                <CopyIcon />
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="destructive"
+                                type="button"
+                                disabled={isResetingWorkspaceInviteCode}
+                                onClick={handleResetInviteCode}
+                            >
+                                Reset Invite Link
+                            </Button>
                         </div>
                     </div>
                 </div>

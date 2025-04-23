@@ -1,21 +1,13 @@
-import { getAllWorkspaces } from "@/lib/actions/workspace.action";
+import { Metadata } from "next";
 import WorkspacesClient from "./client";
 
-const WorkspacesPage = async ({ searchParams }: SearchParams) => {
-    const { page, pageSize, query, filter } = await searchParams;
-
-    const workspaceData = await getAllWorkspaces({
-        page: Number(page) || 1,
-        pageSize: Number(pageSize) || 10,
-        query: query || "",
-        filter: filter || "",
-    });
-
-    const { workspaces, isNext } = workspaceData.data || {};
-
+export const metadata: Metadata = {
+    title: "Workspaces",
+};
+const WorkspacesPage = async () => {
     return (
         <div className="px-10">
-            <WorkspacesClient workspaces={workspaces || []} />
+            <WorkspacesClient />
         </div>
     );
 };

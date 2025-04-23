@@ -13,6 +13,7 @@ interface Workspace {
     name: string;
     image: File | string;
     userId: string;
+    workspaceCreator?: string;
     inviteCode: string;
 }
 
@@ -45,8 +46,8 @@ interface Task {
     dueDate: Date;
     status: TaskStatusType;
     position: number;
-    created_at?: Date;
-    updated_at?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 interface Analytics {

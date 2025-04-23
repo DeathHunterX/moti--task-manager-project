@@ -26,10 +26,11 @@ const ProjectForm = ({
     const projectId = useProjectId();
     const workspaceId = useWorkspaceId();
 
-    const createProjectMutation = useCreateProject();
-    const editProjectMutation = useEditProject(projectId);
+    const { mutate: createProject, isPending: isCreatingProject } =
+        useCreateProject();
+    const { mutate: editProject, isPending: isEditingProject } =
+        useEditProject(projectId);
 
-    // 1. Define your form.
     const form = useForm<z.infer<typeof CreateProjectSchema>>({
         resolver: zodResolver(CreateProjectSchema),
         defaultValues: {
@@ -38,15 +39,9 @@ const ProjectForm = ({
         },
     });
 
-    const handleCancelForm = () => {
-        form.reset();
-        onCancel?.();
-    };
-
-    // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof CreateProjectSchema>) {
         if (actionType === "update") {
-            editProjectMutation.mutate(
+            editProject(
                 {
                     workspaceId: initialData?.workspaceId as string,
                     projectId: initialData?._id as string,
@@ -60,7 +55,7 @@ const ProjectForm = ({
                 }
             );
         } else {
-            createProjectMutation.mutate(
+            createProject(
                 {
                     workspaceId: workspaceId as string,
                     name: values.name,
@@ -75,6 +70,13 @@ const ProjectForm = ({
         }
     }
 
+    const handleCancelForm = () => {
+        form.reset();
+        onCancel?.();
+    };
+
+    const isPending = isCreatingProject || isEditingProject;
+
     const buttonText =
         actionType === "create" ? "Create project" : "Save changes";
     return (
@@ -83,21 +85,31 @@ const ProjectForm = ({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8 my-5"
             >
-                <InputField nameInSchema="name" label="Project Name" />
+                <InputField
+                    nameInSchema="name"
+                    label="Project Name"
+                    disabled={isPending}
+                />
 
-                <ImageInputField nameInSchema="image" label="Project Icon" />
+                <ImageInputField
+                    nameInSchema="image"
+                    label="Project Icon"
+                    disabled={isPending}
+                />
 
                 <div className="flex flex-rows justify-between gap-4">
                     <Button
-                        className="px-5 py-3"
-                        variant="outline"
                         type="button"
+                        variant="outline"
+                        className="px-5 py-3"
+                        disabled={isPending}
                         onClick={handleCancelForm}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
+                        disabled={isPending}
                         className="px-5 py-3 bg-blue-600 hover:bg-blue-700"
                     >
                         {buttonText}

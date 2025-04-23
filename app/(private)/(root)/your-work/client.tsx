@@ -23,27 +23,6 @@ const YourWorkClient = () => {
                 linkHref="/projects"
                 linkText="View all projects"
             />
-
-            {/* <div className="">
-                    <Tabs defaultValue="workspaces" className="w-[400px]">
-                        <TabsList>
-                            <TabsTrigger value="worked-on">
-                                Worked on
-                            </TabsTrigger>
-                            <TabsTrigger value="viewed">Viewed</TabsTrigger>
-                            <TabsTrigger value="assigned">
-                                Assigned to me
-                            </TabsTrigger>
-                            <TabsTrigger value="starred">Starred</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="workspaces">
-                            Make changes to your account here.
-                        </TabsContent>
-                        <TabsContent value="projects">
-                            Change your password here.
-                        </TabsContent>
-                    </Tabs>
-                </div> */}
         </div>
     );
 };
